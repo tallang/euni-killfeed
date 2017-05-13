@@ -1,0 +1,105 @@
+div#block-top
+{
+	position: relative;
+	width: 1380px;
+	height: 170px;
+}
+
+div#quickinfo, div#stats
+{
+	position: absolute;
+	margin: 0;
+	top: 10px;
+	bottom: 10px;
+}
+
+div#quickinfo
+{
+	left: 10px;
+	right: 870px;
+}
+
+div#quickinfo div#quickinfo-avatar
+{
+	position: absolute;
+	left: 10px;
+	top: 10px;
+	bottom: 10px;
+	width: 130px;
+}
+
+div#quickinfo div#quickinfo-text
+{
+	position: absolute;
+	left: 140px;
+	top: 20px;
+	right: 10px;
+	height: 60px;
+}
+
+div#quickinfo div#quickinfo-stats
+{
+	position: absolute;
+	left: 150px;
+	top: 90px;
+	bottom: 10px;
+	right: 10px;
+}
+
+div#quickinfo div#quickinfo-stats div#quickinfo-bar
+{
+	position: absolute;
+	left: 0;
+	right: 0;
+	top: 0;
+	height: 46px;
+}
+
+div#stats
+{
+	left: 520px;
+	right: 10px;
+	overflow: auto;
+}
+
+div#stats div.stats-entry
+{
+	position: absolute;
+	top: 10px;
+	bottom: 10px;
+	width: 250px;
+}
+div#stats div#stats-1 { left: 20px; }
+div#stats div#stats-2 { left: 285px; }
+div#stats div#stats-3 { left: 550px; }
+
+div#stats div.stats-entry div.label
+{
+	position: absolute;
+	left: 0;
+	right: 0;
+	top: 0;
+	height: 20px;
+	line-height: 20px;
+	font-weight: bold;
+	vertical-align: middle;
+	text-align: center;
+	font-size: 14px;
+	cursor: default;
+}
+
+div#stats div.stats-entry svg
+{
+	position: absolute;
+	left: 0;
+	right: 0;
+	top: 30px;
+	bottom: 0;
+}
+
+div#block-bottom
+{
+	width: 970px;
+	padding: 20px 0;
+	margin: 10px 200px;
+}

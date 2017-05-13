@@ -1,0 +1,20 @@
+div#iskwar-background
+{
+  transform: scale(0.685);
+  transform-origin: left;
+}
+div#involved {
+  width: 940px;
+  margin: 20px 10px;
+}
+div#involved-left, div#involved-right
+{
+  width: 460px;
+  margin: 5px;
+  border-radius: 10px;
+}
+div.involved-entry
+{
+  width: 460px;
+  border-radius: 10px;
+}

@@ -1,0 +1,5 @@
+session/*
+cache/*
+*.log
+*.7z
+phpinfo.php

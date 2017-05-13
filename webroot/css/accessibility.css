@@ -1,0 +1,127 @@
+@import url('accessibility.small.css') (max-width: 960px);
+@import url('accessibility.standard.css') (min-width: 960px) and (max-width: 1400px);
+@import url('accessibility.deluxe.css') (min-width: 1400px);
+
+div#colorprofile-header
+{
+  margin: 5px 5px 0px;
+  padding: 0 5px;
+  border-bottom: 1px solid #ffffff;
+  font-weight: bold;
+  font-size: 16px;
+}
+
+div#colorprofile-description
+{
+  margin: 5px 15px;
+  font-size: 11px;
+  font-style: italic;
+  color: #cccccc;
+}
+
+div#colorprofile-example-label, div#colorprofile-example-info
+{
+  font-family: Arial Black;
+  font-size: 15px;
+  margin: 0 10px;
+  display: inline-block;
+}
+div#colorprofile-example-label
+{
+  padding: 2px 10px 0px;
+  background: #331919;
+  border-radius: 15px 15px 0 0;
+}
+div#colorprofile-example div.listing-entry { border-bottom: 0; }
+div#colorprofile-example-label-wrapper, div#colorprofile-example div.listing-entry.loss { border-color: #441d1d; }
+div#colorprofile-example-info-wrapper, div#colorprofile-example div.listing-entry.kill { border-color: #1d441d; }
+div#colorprofile-example-info-wrapper { text-align: right; }
+div#colorprofile-example-info
+{
+  position: relative;
+  top: -2px;
+  padding: 0px 10px 2px;
+  background: #193319;
+  border-radius: 0 0 15px 15px;
+}
+
+div#colorprofile-selectors { padding: 5px; }
+div.colorprofile-selector {
+  display: inline-block;
+  position: relative;
+  margin: 5px;
+  width: 285px;
+  height: 150px;
+  border-radius: 5px;
+  border: 2px solid #c3c3c3;
+}
+div.colorprofile-selector div.colorprofile-select
+{
+  position: absolute;
+  left: 10px;
+  right: 10px;
+  top: 5px;
+  height: 20px;
+  text-align: center;
+  line-height: 20px;
+  vertical-align: middle;
+  font-size: 12px;
+  font-weight: bold;
+  background: rgba(251,251,251,0.2);
+  cursor: pointer;
+  letter-spacing: 3px;
+  border-radius: 5px;
+  border: 2px solid #c3c3c3;
+}
+div.colorprofile-selector div.colorprofile-select:hover { color: #333333; background: rgba(251,251,251,0.5); }
+div.colorprofile-selector.selected div.colorprofile-select { background: none; color: #fbfbfb; cursor: default; }
+div.colorprofile-selector div.colorprofile-select:after { content: 'SELECT'; }
+div.colorprofile-selector.selected div.colorprofile-select:after { content: 'SELECTED'; }
+div#colorprofile-custom.colorprofile-selector div.colorprofile-select:after { content: 'USE CUSTOM'; }
+div#colorprofile-custom.colorprofile-selector.selected div.colorprofile-select:after { content: 'USING CUSTOM'; }
+div.colorprofile-selector div.colorprofile-hostile-label, div.colorprofile-selector div.colorprofile-friendly-label
+{
+  position: absolute;
+  left: 5px;
+  height: 50px;
+  line-height: 50px;
+  vertical-align: middle;
+  font-family: Monospace;
+  font-size: 13px;
+  letter-spacing: -1px;
+}
+div.colorprofile-selector div.colorprofile-hostile-label { top: 90px; }
+div.colorprofile-selector div.colorprofile-friendly-label { top: 35px; }
+div.colorprofile-hostile1, div.colorprofile-hostile2, div.colorprofile-hostile3, div.colorprofile-hostile4,
+div.colorprofile-hostile5, div.colorprofile-hostile6, div.colorprofile-hostile7
+{
+  position: absolute;
+  top: 90px;
+  height: 50px;
+  width: 30px;
+}
+div.colorprofile-hostile7 { left: 70px; }
+div.colorprofile-hostile3 { left: 100px; }
+div.colorprofile-hostile4 { left: 130px; }
+div.colorprofile-hostile1 { left: 160px; }
+div.colorprofile-hostile2 { left: 190px; }
+div.colorprofile-hostile5 { left: 220px; }
+div.colorprofile-hostile6 { left: 250px; }
+div.colorprofile-friendly1, div.colorprofile-friendly2, div.colorprofile-friendly3, div.colorprofile-friendly4,
+div.colorprofile-friendly5, div.colorprofile-friendly6, div.colorprofile-friendly7
+{
+  position: absolute;
+  top: 35px;
+  height: 50px;
+  width: 30px;
+}
+div.colorprofile-friendly7 { left: 70px; }
+div.colorprofile-friendly3 { left: 100px; }
+div.colorprofile-friendly4 { left: 130px; }
+div.colorprofile-friendly1 { left: 160px; }
+div.colorprofile-friendly2 { left: 190px; }
+div.colorprofile-friendly5 { left: 220px; }
+div.colorprofile-friendly6 { left: 250px; }
+div#colorprofile-custom input { border: 0; margin: 0; padding: 0; }
+div#colorprofile-custom input::-webkit-color-swatch { border: 0; }
+div#colorprofile-custom input::-moz-color-swatch { border: 0; }

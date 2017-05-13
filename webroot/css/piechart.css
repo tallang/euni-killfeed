@@ -1,0 +1,33 @@
+svg.pie text
+{
+	font-family: Verdana;
+	font-size: 10px;
+	stroke-width: 2px;
+	cursor: default;
+}
+svg.pie text.value { text-anchor: end; }
+svg.pie text.label { text-anchor: start; }
+
+svg.pie g.left circle
+{
+	pointer-events: fill;
+}
+
+svg.pie g.right circle
+{
+	pointer-events: stroke;
+	stroke-width: 32px;
+	fill: transparent;
+}
+
+svg.pie.greenred g.left text { fill: #2b802b; }
+svg.pie.greenred g.left:hover text { fill: #2bc02b; }
+
+svg.pie.greenred g.left circle { fill: #193419; }
+svg.pie.greenred g.left:hover circle { fill: #1d451d; }
+
+svg.pie.greenred g.right circle { stroke: #4c1919; }
+svg.pie.greenred g.right:hover circle { stroke: #661d1d; }
+
+svg.pie.greenred g.right text { fill: #902020; }
+svg.pie.greenred g.right:hover text { fill: #d82020; }

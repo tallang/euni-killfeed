@@ -1,0 +1,11 @@
+div#block-top
+{
+  width: 1200px;
+  margin: 10px 90px;
+}
+
+div#block-bottom
+{
+  width: 970px;
+  margin: 10px 205px;
+}

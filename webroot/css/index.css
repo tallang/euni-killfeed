@@ -1,0 +1,22 @@
+@import url('index.small.css') (max-width: 960px);
+@import url('index.standard.css') (min-width: 960px) and (max-width: 1400px);
+@import url('index.deluxe.css') (min-width: 1400px);
+
+div#block-top div#past-days-label
+{
+	margin-top: 10px;
+  width: 100%;
+	text-align: center;
+	height: 25px;
+	line-height: 25px;
+	vertical-align: middle;
+	text-align: center;
+	font-family: Arial Black;
+	font-size: 18px;
+	font-weight: bold;
+}
+
+div#block-bottom
+{
+	padding: 20px 0;
+}

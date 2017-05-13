@@ -1,0 +1,14 @@
+.optional { display: none; }
+body { min-width: 960px; }
+div#content
+{
+  margin-left: -480px;
+  width: 960px;
+}
+div.quickinfo-block { width: 237px; }
+div.quickinfo-block div.quickinfo-left
+{
+  width: 70px;
+  padding-left: 5px;
+}
+div.quickinfo-block div.quickinfo-right { width: 155px; }

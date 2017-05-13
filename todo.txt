@@ -1,0 +1,6 @@
+- add link to portraits
+- maybe add small corp/alliance logos inline with corp/alliance names in listings (need to figure out how this looks)
+- wormhole class/effect data: pull from some api?
+- add overview by area of space
+- movable navbar
+- downscaling for entity pages

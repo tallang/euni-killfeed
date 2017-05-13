@@ -1,0 +1,15 @@
+div#involved {
+  width: 1360px;
+  margin: 20px;
+}
+div#involved-left, div#involved-right
+{
+  width: 660px;
+  margin: 5px 10px;
+  border-radius: 15px;
+}
+div.involved-entry
+{
+  width: 660px;
+  border-radius: 15px;
+}

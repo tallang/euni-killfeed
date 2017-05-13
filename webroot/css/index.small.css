@@ -1,0 +1,15 @@
+div#block-top
+{
+  width: 900px;
+  margin: 10px 30px;
+}
+div#block-top div#past-days-label
+{
+  width: 900px;
+}
+
+div#block-bottom
+{
+  width: 940px;
+  margin: 10px 10px;
+}

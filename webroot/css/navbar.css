@@ -1,0 +1,317 @@
+div#navbar
+{
+	position: fixed;
+	top: 0;
+	left: 30px;
+	width: 200px;
+	height: 30px;
+	border-radius: 0 0 20px 20px;
+	background: #222222;
+	border: 1px solid #787878;
+	border-top: 0;
+	z-index: 100;
+	overflow: hidden;
+	transition: height 1s, opacity 1s;
+	opacity: 0.3;
+}
+div#navbar.expanded { opacity: 1; }
+div#navbar div.logo-container { margin: 0 50px; width: 100px; height: 75px; }
+div#navbar-expand-button, div#navbar-collapse-button { transition: height 0.5s, opacity 0.5s; width: 200px; height: 30px; cursor: pointer; }
+div#navbar.expanded div#navbar-expand-button, div#navbar.collapsed div#navbar-collapse-button { opacity: 0; height: 0; }
+
+div#navbar div#navbar-search
+{
+	position: relative;
+	width: 180px;
+	height: 20px;
+	margin: 0 10px;
+	top: 10px;
+}
+
+div#navbar div#navbar-search div#navbar-search-input
+{
+	position: absolute;
+	left: 0;
+	top: 0;
+	bottom: 0;
+	right: 25px;
+}
+div#navbar div#navbar-search div#navbar-search-input input {
+	width: 100%;
+	font-size: 10px;
+	font-family: Verdana;
+	color: #fbfbfb;
+	background-color: #555555;
+	padding: 2px 2px;
+}
+
+div#navbar div#navbar-search div#navbar-search-button
+{
+	position: absolute;
+	right: 0;
+	width: 16px;
+	top: 2px;
+	bottom: 2px;
+	cursor: pointer;
+}
+
+div#navbar div#navbar-search-results {
+	margin: 5px 10px;
+	border: 1px solid #cccccc;
+	border-radius: 5px;
+	position: relative;
+	top: 10px;
+	display: none;
+}
+div#navbar div#navbar-search-results.loading, div#navbar div#navbar-search-results.results, div#navbar div#navbar-search-results.no-results, div#navbar div#navbar-search-results.error
+{ display: block; }
+div#navbar div#navbar-search-results.error { border-color: #ff0000; }
+
+div#navbar div#navbar-search-results div#navbar-search-close
+{
+	width: 10px;
+	margin-right: 10px;
+	margin-left: 160px;
+	align: right;
+	font-family: Monospace;
+	cursor: pointer;
+	display: none;
+}
+div#navbar div#navbar-search-results.results div#navbar-search-close, div#navbar div#navbar-search-results.no-results div#navbar-search-close, div#navbar div#navbar-search-results.error div#navbar-search-close { display: block; }
+div#navbar div#navbar-search-results.error div#navbar-search-close { color: #ff0000; }
+
+div#navbar div#navbar-search-results div#navbar-search-loading
+{
+	width: 20px;
+	height: 20px;
+	padding: 5px 80px;
+	display: none;
+}
+div#navbar div#navbar-search-results.loading div#navbar-search-loading { display: block; }
+
+div#navbar div#navbar-search-results div#navbar-search-no-results
+{
+	font-family: Verdana;
+	font-size: 11px;
+	font-style: italic;
+	color: #c3c3c3;
+	font-weight: bold;
+	white-space: nowrap;
+	padding: 5px;
+	display: none;
+}
+div#navbar div#navbar-search-results.no-results div#navbar-search-no-results { display: block; }
+
+div#navbar div#navbar-search-results div#navbar-search-results-error
+{
+	font-family: Verdana;
+	font-size: 10px;
+	color: #ff0000;
+	font-weight: bold;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+	padding: 5px;
+	display: none;
+}
+div#navbar div#navbar-search-results.error div#navbar-search-results-error { display: block; }
+
+div#navbar div#navbar-search-results div.navbar-search-result
+{
+	position: relative;
+	height: 20px;
+	cursor: pointer;
+	display: none;
+	margin-left: 2px;
+	margin-right: 2px;
+	margin-bottom: 5px;
+	border-radius: 5px;
+	overflow: hidden;
+}
+div#navbar div#navbar-search-results.results div.navbar-search-result { display: block; }
+div#navbar div#navbar-search-results div.navbar-search-result:hover { background: #555555; }
+div#navbar div#navbar-search-results div.navbar-search-result + div#navbar div#navbar-search-results div.navbar-search-result { margin-bottom: 0; }
+
+div#navbar div#navbar-search-results div.navbar-search-result > a
+{
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	right: 0;
+	left: 0;
+}
+
+div#navbar div#navbar-search-results div.navbar-search-result a div.navbar-search-result-avatar
+{
+	position: absolute;
+	left: 5px;
+	top: 2px;
+	bottom: 2px;
+	width: 16px;
+}
+
+div#navbar div#navbar-search-results div.navbar-search-result a div.navbar-search-result-name
+{
+	position: absolute;
+	left: 25px;
+	right: 5px;
+	top: 0;
+	bottom: 0;
+	line-height: 20px;
+	vertical-align: middle;
+	font-family: Verdana;
+	color: #c3c3c3;
+	font-size: 11px;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+	overflow: hidden;
+}
+div#navbar div#navbar-search-results div.navbar-search-result:hover a div.navbar-search-result-name { font-weight: bold; }
+
+div#navbar div.navbar-label
+{
+	width: 200px;
+	height: 16px;
+	padding-top: 20px;
+	font-family: Verdana;
+	font-size: 13px;
+	font-weight: bold;
+	text-align: center;
+	line-height: 16px;
+	vertical-align: middle;
+	cursor: default;
+}
+div#navbar div.navbar-entry
+{
+	width: 200px;
+	height: 14px;
+}
+div#navbar div.navbar-entry > a
+{
+	display: block;
+	width: 190px;
+	height: 14px;
+	padding: 0 5px;
+	font-family: Verdana;
+	font-size: 11px;
+	cursor: pointer;
+	color: #c3c3c3;
+	transition: color 0.2s;
+	line-height: 14px;
+	vertical-align: middle;
+}
+div#navbar div.navbar-entry:hover > a { color: #fbfbfb; font-weight: bold; }
+
+div#login-dialog
+{
+	position: fixed;
+	top: 0;
+	right: 0;
+	width: 25px;
+	height: 25px;
+	border-radius: 0 0 0 20px;
+	background: #222222;
+	border: 1px solid #787878;
+	border-top: 0;
+	border-right: 0;
+	z-index: 100;
+	overflow: hidden;
+	transition: height 1s, width 1s, opacity 1s;
+	opacity: 0.3;
+}
+div#login-dialog.expanded { opacity: 1; }
+div#login-dialog > div#login-expand-button
+{
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	cursor: pointer;
+}
+div#login-dialog.expanded > div#login-expand-button { display: none; }
+div#login-dialog.collapsed > div#login-collapse-button { display: none; }
+div#login-dialog.collapsed > div#login-wrapper { visibility: hidden; }
+div#login-dialog > div#login-wrapper { margin: 5px 10px; }
+div#login-dialog > div#login-wrapper.login { position: relative; width: 300px; height: 15px; }
+
+div#login-dialog > div#login-wrapper.login > label
+{
+	display: inline-block;
+	position: absolute;
+	top: 0;
+	bottom: 2px;
+	width: 40px;
+	font-size: 12px;
+	font-family: Monospace;
+	font-weight: bold;
+	color: #a3a3a3;
+}
+div#login-dialog > div#login-wrapper.login > input
+{
+	display: inline-block;
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	width: 85px;
+	font-size: 10px;
+	font-family: Verdana;
+	color: #fbfbfb;
+	background-color: #555555;
+	height: 15px;
+	min-height: 15px;
+}
+div#login-dialog > div#login-wrapper.login > input.error { border: 1px solid #cc0000; margin: -1px; }
+div#login-dialog > div#login-wrapper.login > div#login-login
+{
+	display: inline-block;
+	position: absolute;
+	top: 1px;
+	bottom: 1px;
+	left: 280px;
+	width: 13px;
+	cursor: pointer;
+}
+
+div#login-status
+{
+	position: fixed;
+	top: 26px;
+	right: 0;
+	border-radius: 0 0 0 20px;
+	background: #222222;
+	border: 1px solid #787878;
+	border-top: 0;
+	border-right: 0;
+	z-index: 99;
+	overflow: hidden;
+	transition: width 1s, height 0.5s, opacity 1s;
+}
+div#login-status.collapsed { width: 0px; height: 0px; }
+div#login-status.expanded { height: 20px; width: 0px; }
+div#login-dialog.collapsed + div#login-status { width: 0 !important; height: 0 !important; }
+
+div#login-status > div#login-status-message
+{
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	right: 5px;
+	line-height: 20px;
+	font-family: Monospace;
+	font-size: 12px;
+	font-weight: bold;
+	white-space: nowrap;
+}
+
+div#login-wrapper.logout
+{
+	white-space: nowrap;
+	font-size: 10px;
+	line-height: 20px;
+	height: 20px;
+	vertical-align: middle;
+}
+div#login-wrapper.logout > a#logout-text
+{
+	cursor: pointer;
+}

@@ -1,0 +1,111 @@
+ svg.linechart > g.grid > line
+{
+	fill: none;
+	stroke: #ffffff;
+	stroke-width: 1px;
+}
+svg.linechart > g.grid > line.axis { opacity: 0.2; }
+svg.linechart > g.grid > line.label { opacity: 0.1; }
+
+svg.linechart > g.grid > text.axis-label
+{
+	font-family: Verdana;
+	font-size: 4px;
+	cursor: default;
+	text-anchor: middle;
+	fill: #a2a2a2;
+	font-weight: bold;
+}
+
+svg.linechart > g.grid > text.label
+{
+	font-family: Verdana;
+	font-size: 4px;
+	cursor: default;
+	text-anchor: end;
+	fill: #a2a2a2;
+	opacity: 0.8;
+}
+
+svg.linechart > g.chart-lines > line
+{
+	fill: none;
+	stroke: #ffffff;
+	opacity: 0.6;
+	stroke-width: 1px;
+}
+
+svg.linechart > g.chart-points > g.chart-point-label > circle
+{
+	fill: #555555;
+	stroke: #808080;
+	stroke-width: 1px;
+}
+svg.linechart > g.chart-points > g.chart-point-label:hover > circle { fill: #999999; stroke: #c0c0c0; }
+
+svg.linechart > g.chart-points > g.chart-point-label > rect.hoverlabel-bg
+{
+	stroke: none;
+	fill: none;
+	opacity: 0.5;
+	pointer-events: none;
+}
+svg.linechart > g.chart-points > g.chart-point-label:hover > rect.hoverlabel-bg { fill: #000000; }
+
+svg.linechart > g.chart-points > g.chart-point-label > text.label
+{
+	font-family: Verdana;
+	font-size: 4px;
+	cursor: default;
+	text-anchor: middle;
+	fill: #999999;
+}
+svg.linechart > g.chart-points > g.chart-point-label > text.label.hoverlabel { fill: none; }
+svg.linechart > g.chart-points > g.chart-point-label:hover > text.label {
+	fill: #aaaaaa;
+	font-weight: bold;
+}
+
+svg.linechart > g.chart-points > g.chart-point-label > rect.hovertext-bg
+{
+	stroke: none;
+	fill: none;
+	opacity: 0.5;
+	pointer-events: none;
+}
+svg.linechart > g.chart-points > g.chart-point-label:hover > rect.hovertext-bg { fill: #000000; }
+	
+svg.linechart > g.chart-points > g.chart-point-label > text.hovertext
+{
+	font-family: Monospace;
+	font-size: 4px;
+	cursor: default;
+	text-anchor: middle;
+	fill: none;
+	stroke: none;
+	pointer-events: none;
+}
+svg.linechart > g.chart-points > g.chart-point-label:hover > text.hovertext { fill: #cccccc; }
+
+svg.linechart > g.topkills > g.topkill-day > a > image.type
+{
+	cursor: pointer;
+	border-radius: 1px;
+}
+
+svg.linechart > g.topkills > g.topkill-day > a > rect.value-bg
+{
+	stroke: none;
+	fill: #000000;
+	opacity: 0.5;
+	pointer-events: none;
+}
+
+svg.linechart > g.topkills > g.topkill-day > a > text.value
+{
+	font-family: Monospace;
+	font-size: 4px;
+	cursor: pointer;
+	text-anchor: middle;
+	fill: #cccccc;
+}

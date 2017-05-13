@@ -1,0 +1,8 @@
+- adjust config/config.inc.php to have logins
+- make sure web user has write on folders 'session' and 'cache'
+- set vhost webroot to ./webroot/
+- run createdb.sql, then create data tables using scripts in ./data/
+- insert zkill api urls you want into api_urls table (set appropriate cutoff value to make fetch not fetch EVERYTHING) (unless you want that)
+  - f.ex. `insert into api_urls values (null,'https://zkillboard.com/api/corporationID/917701062/',56677095);`
+  - if you want to use xmlapi (not recommended), insert api keys into api_keys
+- run parse_zkill.php

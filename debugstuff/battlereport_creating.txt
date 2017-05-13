@@ -1,0 +1,4 @@
+1. insert into battlereport_meta
+2. insert into battlereport_sources
+3. LOG IN
+4. access br.php?id=

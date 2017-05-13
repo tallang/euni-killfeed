@@ -1,0 +1,20 @@
+-- this resets all kill info, but maintains cached item/price data and api keys
+TRUNCATE TABLE `alliance_kill_history`;
+TRUNCATE TABLE `alliance_metadata`;
+TRUNCATE TABLE `character_kill_history`;
+TRUNCATE TABLE `character_metadata`;
+TRUNCATE TABLE `corporation_kill_history`;
+TRUNCATE TABLE `corporation_metadata`;
+TRUNCATE TABLE `kill_comments`;
+TRUNCATE TABLE `kill_fittings`;
+TRUNCATE TABLE `kill_killers`;
+TRUNCATE TABLE `kill_metadata`;
+TRUNCATE TABLE `region_kill_history`;
+TRUNCATE TABLE `ship_kill_history`;
+TRUNCATE TABLE `solarsystem_kill_history`;
+TRUNCATE TABLE `kill_day_history`;
+TRUNCATE TABLE `battlereport_meta`;
+TRUNCATE TABLE `battlereport_sides`;
+TRUNCATE TABLE `battlereport_involved`;
+TRUNCATE TABLE `battlereport_involved_fittings`;
+UPDATE `api_keys` SET `latestKill`=0;

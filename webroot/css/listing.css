@@ -1,0 +1,181 @@
+@import url('listing.small.css') (max-width: 960px);
+@import url('listing.standard.css') (min-width: 960px) and (max-width: 1400px);
+@import url('listing.deluxe.css') (min-width: 1400px);
+
+div.listing-label
+{
+	height: 25px;
+	font-size: 18px;
+	line-height: 25px;
+	vertical-align: middle;
+	text-align: center;
+	font-weight: bold;
+	font-family: Arial Black;
+}
+
+div.listing-date-label
+{
+	height: 20px;
+	margin-top: 15px;
+	font-size: 14px;
+	line-height: 20px;
+	vertical-align: middle;
+	text-align: center;
+	font-family: Arial Black;
+	border-bottom: 1px solid #a3a3a3;
+	padding: 5px 0;
+}
+
+div.listing-entry
+{
+	position: relative;
+	height: 50px;
+	overflow: hidden;
+  border-bottom: 1px dotted rgba(255, 255, 255, 0.1);
+}
+div.listing-entry.kill { background: #193319; }
+div.listing-entry.kill:hover a { background: #1d441d; }
+div.listing-entry.loss { background: #331919; }
+div.listing-entry.loss:hover a { background: #441d1d; }
+div.listing-entry a { display: block; width: 100%; height: 100%; border-radius: 15px; }
+
+div.listing-entry div.listing-kill-time
+{
+	position: absolute;
+	top: 5px;
+	left: 13px;
+	height: 16px;
+	weight: 40px;
+	line-height: 16px;
+	vertical-align: middle;
+	font-size: 12px;
+	font-weight: bold;
+}
+
+div.listing-entry div.listing-kill-value
+{
+	position: absolute;
+	top: 25px;
+  left: 15px;
+	height: 12px;
+	width: 45px;
+	line-height: 12px;
+	vertical-align: middle;
+	font-size: 12px;
+	text-align: right;
+	font-family: monospace;
+}
+
+div.listing-entry div.listing-victim-avatar
+{
+	position: absolute;
+	top: 7px;
+	bottom: 7px;
+	left: 100px;
+	width: 36px;
+	border-radius: 10px;
+}
+div.listing-entry div.listing-victim-avatar img { border-radius: 10px; }
+
+div.listing-entry div.listing-victim-icon
+{
+	position: absolute;
+	top: 7px;
+	bottom: 7px;
+	left: 140px;
+	width: 36px;
+	border-radius: 10px;
+}
+div.listing-entry div.listing-victim-icon img { border-radius: 10px; }
+
+div.listing-entry div.listing-victim-name
+{
+	position: absolute;
+	left: 192px;
+	font-size: 11px;
+	height: 15px;
+	line-height: 15px;
+	vertical-align: middle;
+	top: 5px;
+	font-weight: bold;
+}
+
+div.listing-entry div.listing-victim-corp
+{
+	position: absolute;
+	left: 192px;
+	top: 20px;
+	height: 12px;
+	line-height: 12px;
+	vertical-align: middle;
+	font-size: 10px;
+	font-style: italic;
+}
+
+div.listing-entry div.listing-victim-ship
+{
+	position: absolute;
+	left: 198px;
+	top: 32px;
+	height: 12px;
+	line-height: 12px;
+	vertical-align: middle;
+	font-size: 10px;
+}
+
+div.listing-entry div.listing-killer-icon1
+{
+	position: absolute;
+	top: 7px;
+	bottom: 7px;
+	left: 530px;
+	width: 36px;
+	border-radius: 10px;
+}
+div.listing-entry div.listing-killer-icon1.offset { left: 536px; }
+div.listing-entry div.listing-killer-icon1 img { border-radius: 10px; }
+
+div.listing-entry div.listing-killer-icon2
+{
+	position: absolute;
+	top: 18px;
+	bottom: 8px;
+	left: 558px;
+	width: 24px;
+	border-radius: 7px;
+}
+div.listing-entry div.listing-killer-icon2 img { border-radius: 7px; }
+
+div.listing-entry div.listing-killer-name
+{
+	position: absolute;
+	left: 589px;
+	top: 5px;
+	font-size: 11px;
+	height: 15px;
+	line-height: 15px;
+	vertical-align: middle;
+}
+
+div.listing-entry div.listing-killer-corp
+{
+	position: absolute;
+	left: 589px;
+	top: 20px;
+	height: 12px;
+	line-height: 12px;
+	vertical-align: middle;
+	font-size: 10px;
+	font-style: italic;
+}
+
+div.listing-entry div.listing-killer-ship
+{
+	position: absolute;
+	left: 595px;
+	top: 32px;
+	height: 12px;
+	line-height: 12px;
+	vertical-align: middle;
+	font-size: 10px;
+}

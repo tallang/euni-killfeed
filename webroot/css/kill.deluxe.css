@@ -1,0 +1,199 @@
+div#column-left, div#column-right {	width: 398px; }
+div#column-center {	width: 598px; }
+
+div#quickinfo-top, div#quickinfo-middle, div#quickinfo-bottom
+{
+  width: 348px;
+  padding-left: 15px;
+  padding-right: 15px;
+}
+
+div#quickinfo-middle { height: 180px; }
+div#quickinfo-middle div#quickinfo-killer { left: 235px; right: 23px; }
+div#quickinfo-middle div#quickinfo-victim { left: 23px; right: 235px; }
+div#quickinfo-middle div#quickinfo-icon
+{
+	left: 164px;
+	right: 164px;
+	top: 45px;
+	bottom: 85px;
+}
+div#quickinfo-middle div#quickinfo-icon-text
+{
+  bottom: 60px;
+	top: 100px;
+	left: 160px;
+	right: 160px;
+	line-height: 20px;
+  font-size: 12px;
+}
+div#quickinfo-killer img, div#quickinfo-victim img { border-radius: 15px; }
+div#quickinfo-killer div#quickinfo-killer-ship, div#quickinfo-victim div#quickinfo-victim-ship
+{
+  top: 65px;
+	bottom: 45px;
+	border: 2px solid #999999;
+	border-radius: 17px;
+}
+div#quickinfo-killer div#quickinfo-killer-ship
+{
+	right: 65px;
+	left: 5px;
+}
+div#quickinfo-victim div#quickinfo-victim-ship
+{
+	left: 65px;
+	right: 5px;
+	border-color: #700000;
+}
+div#quickinfo-killer div#quickinfo-killer-name, div#quickinfo-victim div#quickinfo-victim-name
+{
+  bottom: 22px;
+	top: 120px;
+	left: -10px;
+	right: -10px;
+	line-height: 18px;
+  font-size: 13px;
+}
+div#quickinfo-killer div#quickinfo-killer-corp, div#quickinfo-victim div#quickinfo-victim-corp
+{
+  bottom: 10px;
+	top: 138px;
+	left: -10px;
+	right: -10px;
+	line-height: 12px;
+  font-size: 10px;
+}
+div#quickinfo-killer div#quickinfo-killer-alliance, div#quickinfo-victim div#quickinfo-victim-alliance
+{
+  bottom: -3px;
+	top: 150px;
+	left: -10px;
+	right: -10px;
+	line-height: 10px;
+  font-size: 9px;
+}
+
+div#comments-title { width: 368px; }
+div#no-comments { width: 358px; }
+div.comment-entry
+{
+  width: 368px;
+  min-height: 24px;
+  padding-bottom: 26px;
+}
+div.comment-entry div.comment-commenter-avatar
+{
+  left: 10px;
+	top: 5px;
+	width: 40px;
+	height: 40px;
+}
+div.comment-entry div.comment-commenter-name
+{
+  top: 5px;
+	left: 55px;
+  right: 5px;
+  font-size: 13px;
+	height: 15px;
+}
+div.comment-entry div.comment-date
+{
+  font-size: 8px;
+  padding-left: 5px;
+}
+div.comment-entry div.comment-text
+{
+  left: 60px;
+	top: 21px;
+	width: 300px;
+	font-size: 10px;
+}
+div#comment-form { width: 356px; }
+div#comment-form-input
+{
+  left: 42px;
+	top: 27px;
+	right: 5px;
+	bottom: 5px;
+}
+textarea#comment-form-inputarea
+{
+  width: 299px;
+	height: 48px;
+}
+
+div.item-entry { width: 578px; }
+div.item-entry div.item-icon
+{
+  width: 25px;
+  left: 10px;
+}
+div.item-entry div.item-name
+{
+  left: 45px;
+  width: 360px;
+}
+div.item-entry div.item-quantity
+{
+  right: 103px;
+  width: 70px;
+}
+div.item-entry div.item-value
+{
+  left: 475px;
+  right: 10px;
+}
+
+div#attackers-summary { width: 348px; }
+div#attackers-summary-ship1 { left: 10px; }
+div#attackers-summary-ship2 { left: 45px; }
+div#attackers-summary-ship1.only-attacker-ship { left: 27px; width: 26px; height: 26px; margin-bottom: -1px; }
+div#attackers-summary-header, div#attackers-summary-info
+{
+  left: 75px;
+  width: 280px;
+}
+
+div.attacker-entry { height: 75px; }
+div.attacker-entry div.attacker-avatar
+{
+  width: 65px;
+  border-radius: 15px;
+}
+div.attacker-entry div.attacker-ship, div.attacker-entry div.attacker-weapon
+{
+  width: 25px;
+  height: 25px;
+  border: 2px solid #999999;
+  bottom: 10px;
+}
+div.attacker-entry div.attacker-ship { left: 20px; }
+div.attacker-entry div.attacker-weapon { left: 50px; }
+div.attacker-entry div.attacker-name, div.attacker-entry div.attacker-corporation, div.attacker-entry div.attacker-alliance, div.attacker-entry div.attacker-types
+{
+  width: 200px;
+  left: 70px;
+  top: 5px;
+}
+div.attacker-entry div.attacker-name
+{
+  font-size: 14px;
+  line-height: 16px;
+}
+div.attacker-entry div.attacker-corporation { font-size: 12px; }
+div.attacker-entry div.attacker-alliance { font-size: 11px; }
+div.attacker-entry div.attacker-types { font-size: 10px; }
+div.attacker-entry div.attacker-damage, div.attacker-entry div.attacker-damage-pct { width: 75px; }
+div.attacker-entry div.attacker-damage
+{
+  top: 12px;
+  right: 20px;
+  font-size: 14px;
+}
+div.attacker-entry div.attacker-damage-pct
+{
+  top: 30px;
+  right: 15px;
+  font-size: 12px;
+}
