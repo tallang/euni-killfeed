@@ -1,5 +1,23 @@
 <?php
 	require(__DIR__.'/../render/setup.inc.php');
+  if (isset($_GET['characterName']))
+  {
+    require(__DIR__.'/../helpers/database.inc.php');
+    $getCharacterQuery = prepareQuery(killfeedDB(),'SELECT `characterId` as `id` FROM `character_metadata` WHERE LCASE(`characterName`) = LCASE(:needle) LIMIT 1;');
+    $getCharacterQuery->bindValue(':needle',$_GET['characterName'],PDO::PARAM_STR);
+    executeQuery($getCharacterQuery);
+    if ($character = $getCharacterQuery->fetchObject())
+    {
+      header('HTTP/1.1 301 Moved Permanently');
+      header('Location: character.php?characterID='.(+$character->id));
+      die();
+    }
+    else
+    {
+      $errorText = 'No character by that exact name. Try using search!';
+      goto render;
+    }
+  }
 	if (isset($_GET['characterID']))
 		$characterId = (int)$_GET['characterID'];
 	else
