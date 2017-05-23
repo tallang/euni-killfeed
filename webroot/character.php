@@ -14,7 +14,7 @@
     }
     else
     {
-      $errorText = 'No character by that exact name. Try using search!';
+      doError('No character by that exact name. Try using search!',400,false);
       goto render;
     }
   }

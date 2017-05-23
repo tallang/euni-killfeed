@@ -23,7 +23,7 @@
 	<body>
 		<?php include(__DIR__.'/navbar.inc.php'); ?>
 		<div id="content">
-			<div id="error" class="panel">The page you were trying to access could not be generated. The server generated the following message:
+			<div id="error" class="panel">The page you were trying to access could not be generated. The server returned the following message:
 				<pre><?=$errorText?></pre>
 			The error has been logged and will be dealt with as appropriate. Sorry!</div>
 		</div>

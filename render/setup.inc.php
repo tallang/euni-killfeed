@@ -33,7 +33,7 @@
 			printf("ERROR %d: %s\n",$code,$text);
 		
 		if ($logToFile === true ||
-			($logToFile === null && (($code === 200) || $code == 500)))
+			($logToFile === null && (($code === 200) || $code === 500)))
 		{
 			$errorFile = fopen(__DIR__.'/../error.log','a');
 			if ($errorFile)
