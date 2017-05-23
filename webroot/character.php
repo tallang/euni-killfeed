@@ -48,56 +48,6 @@
 			goto render;
 		}
 		$characterMetadata = $getMetadataQuery->fetchObject('DBEntityMetadata');
-		
-		$getKillQuery = prepareQuery(killfeedDB(),'SELECT
-										`index`.`killid` as `killId`,
-										`kill`.`victimCharacterId` as `victimCharacterId`,
-										`kill`.`victimCorporationId` as `victimCorporationId`,
-										`kill`.`victimAllianceId` as `victimAllianceId`,
-										`kill`.`shipTypeId` as `victimShipTypeId`,
-										`kill`.`solarSystemId` as `solarSystemId`,
-										DATE_FORMAT(`kill`.`killTime`,\'%d %b %Y\') as `killDate`,
-										DATEDIFF(UTC_TIMESTAMP(),`kill`.`killTime`) as `daysAgo`,
-										TIME_FORMAT(`kill`.`killTime`,\'%H:%i\') as `killTime`,
-										`kill`.`valueTotal` as `valueTotal`,
-										`kill`.`numKillers` as `numKillers`,
-										`kill`.`mostCommonKillerShip` as `mostCommonKillerShip`,
-										`kill`.`secondMostCommonKillerShip` as `secondMostCommonKillerShip`,
-										`char`.`characterName` as `victimCharacterName`,
-										`corp`.`corporationName` as `victimCorporationName`,
-										`alliance`.`allianceName` as `victimAllianceName`,
-										`finalBlow`.`killerCharacterId` AS `killerCharacterId`,
-										`finalBlow`.`killerCharacterName` as `killerNpcCharacterName`,
-										`finalBlowChar`.`characterName` as `killerCharacterName`,
-										`finalBlow`.`killerCorporationId` as `killerCorporationId`,
-										`finalBlowCorp`.`corporationName` as `killerCorporationName`,
-										`finalBlow`.`killerAllianceId` as `killerAllianceId`,
-										`finalBlowAlliance`.`allianceName` as `killerAllianceName`,
-										`finalBlow`.`killerShipTypeId` as `killerShipTypeId`,
-										(`kill`.`victimCharacterId` = :characterId) as `isLoss`
-									FROM `character_kill_history` as `index`
-									LEFT JOIN `kill_metadata` as `kill`
-										ON `kill`.`id` = `index`.`killid`
-									LEFT JOIN `character_metadata` as `char`
-										ON `kill`.`victimCharacterId` = `char`.`characterId`
-									LEFT JOIN `corporation_metadata` as `corp`
-										ON `kill`.`victimCorporationId` = `corp`.`corporationId`
-									LEFT JOIN `alliance_metadata` as `alliance`
-										ON `kill`.`victimAllianceId` = `alliance`.`allianceId`
-									LEFT JOIN `kill_killers` as `finalBlow`
-										ON `kill`.`id` = `finalBlow`.`killId` and `finalBlow`.`finalBlow` = 1
-									LEFT JOIN `character_metadata` as `finalBlowChar`
-										ON `finalBlow`.`killerCharacterId` = `finalBlowChar`.`characterId`
-									LEFT JOIN `corporation_metadata` as `finalBlowCorp`
-										ON `finalBlow`.`killerCorporationId` = `finalBlowCorp`.`corporationId`
-									LEFT JOIN `alliance_metadata` as `finalBlowAlliance`
-										ON `finalBlow`.`killerAllianceId` = `finalBlowAlliance`.`allianceId`
-									WHERE `index`.`characterId` = :characterId AND `kill`.`valueTotal` > 100000
-									ORDER BY `kill`.`id` DESC
-									LIMIT 30;');
-		$getKillQuery->bindValue(':characterId',$characterId,PDO::PARAM_INT);
-		$getKillQuery->execute();
-		$kills = fetchAll($getKillQuery,'DBKillListEntry');
 	}
 	catch (PDOException $e)
 	{
@@ -117,6 +67,7 @@
 		<link rel="stylesheet" href="css/character.css" />
 		<script src="js/colorprofile.js"></script>
 		<script src="js/navbar.js"></script>
+    <script src="js/listing.js"></script>
 		<script src="js/character.js"></script>
 		<meta name="viewport" content="width=1000, initial-scale=1" />
 	</head>
@@ -187,8 +138,11 @@
 				</div>
 			</div>
 			<div id="block-bottom" class="panel">
-				<div class="listing-label">Recent activity</div><?php
-				renderKillListing($kills); ?>
+				<div class="listing-label">Recent activity</div>
+        <!--<div class="listing-selector">
+          (<span id="listing-selector-all">All</span> | <span id="listing-selector-kills">Kills</span> | <span id="listing-selector-losses">Losses</span>)
+        </div>-->
+        <div id="listing-container" data-type="character" data-typeid="<?=$characterId?>"></div>
 			</div>
 		</div>
 	</body>
