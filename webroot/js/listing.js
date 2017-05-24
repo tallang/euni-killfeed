@@ -1,6 +1,8 @@
 var listingContainer = null;
 var listingData = [];
 var currentListingPage = 1;
+const LISTING_FILTER_NONE = 0, LISTING_FILTER_KILLS = 1, LISTING_FILTER_LOSSES = 2;
+var currentListingFilter = LISTING_FILTER_NONE;
 
 function getSecStatusColor(sec)
 {
@@ -29,14 +31,21 @@ function getSecStatusColor(sec)
 
 function checkFilter(killmail)
 {
-  // @todo stub
+  switch (currentListingFilter)
+  {
+    case LISTING_FILTER_NONE:
+      return true;
+    case LISTING_FILTER_KILLS:
+      return killmail.isKill;
+    case LISTING_FILTER_LOSSES:
+      return !killmail.isKill;
+  }
   return true;
 }
 
 function isFiltered()
 {
-  // @todo stub
-  return false;
+  return (currentListingFilter != LISTING_FILTER_NONE);
 }
 
 var listingLoadError = function(error)
@@ -256,6 +265,34 @@ function redrawKillListing()
   }
 }
 
+
+function removeFilters()
+{
+  if (currentListingFilter == LISTING_FILTER_NONE)
+    return;
+  currentListingFilter = LISTING_FILTER_NONE;
+  this.parentElement.className = 'listing-selected-all';
+  redrawKillListing();
+}
+
+function setFilterKills()
+{
+  if (currentListingFilter == LISTING_FILTER_KILLS)
+    return;
+  currentListingFilter = LISTING_FILTER_KILLS;
+  this.parentElement.className = 'listing-selected-kills';
+  redrawKillListing();
+}
+
+function setFilterLosses()
+{
+  if (currentListingFilter == LISTING_FILTER_LOSSES)
+    return;
+  currentListingFilter = LISTING_FILTER_LOSSES;
+  this.parentElement.className = 'listing-selected-losses';
+  redrawKillListing();
+}
+
 document.addEventListener('DOMContentLoaded', function()
 {
   listingContainer = document.getElementById('listing-container');
@@ -263,4 +300,26 @@ document.addEventListener('DOMContentLoaded', function()
     redrawKillListing();
   else
     listingContainer = null;
+  
+  var listingSelectors = document.getElementById('listing-selectors');
+  if (listingSelectors)
+  {
+    var e = listingSelectors.firstElementChild;
+    while (e)
+    {
+      switch (e.id)
+      {
+        case 'listing-selector-all':
+          e.onclick = removeFilters;
+          break;
+        case 'listing-selector-kills':
+          e.onclick = setFilterKills;
+          break;
+        case 'listing-selector-losses':
+          e.onclick = setFilterLosses;
+          break;
+      }
+      e = e.nextElementSibling;
+    }
+  }
 });

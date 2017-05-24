@@ -61,9 +61,13 @@ function updateColorProfile(initialLoad)
     toChange[i] = hexToRgb(getCurrentProfileColor(i));
 	
 	var setProfileColor = undefined;
+  if (!document.styleSheets)
+    return;
 	for (var i=0, len = document.styleSheets.length; i < len; ++i)
 	{
 		var sheet = document.styleSheets[i];
+    if (!sheet.cssRules)
+      continue;
 		for (var j=0, len2 = sheet.cssRules.length; j < len2; ++j)
 		{
 			var rule = sheet.cssRules[j];
