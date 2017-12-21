@@ -1,57 +1,57 @@
 <?php
-	define('HIGHSLOT1',     1);
-	define('HIGHSLOT2',     2);
-	define('HIGHSLOT3',     3);
-	define('HIGHSLOT4',     4);
-	define('HIGHSLOT5',     5);
-	define('HIGHSLOT6',     6);
-	define('HIGHSLOT7',     7);
-	define('HIGHSLOT8',     8);
+	define('HIGHSLOT1',      1);
+	define('HIGHSLOT2',      2);
+	define('HIGHSLOT3',      3);
+	define('HIGHSLOT4',      4);
+	define('HIGHSLOT5',      5);
+	define('HIGHSLOT6',      6);
+	define('HIGHSLOT7',      7);
+	define('HIGHSLOT8',      8);
 	
-	define('MIDSLOT1',      9);
-	define('MIDSLOT2',     10);
-	define('MIDSLOT3',     11);
-	define('MIDSLOT4',     12);
-	define('MIDSLOT5',     13);
-	define('MIDSLOT6',     14);
-	define('MIDSLOT7',     15);
-	define('MIDSLOT8',     16);
+	define('MIDSLOT1',       9);
+	define('MIDSLOT2',      10);
+	define('MIDSLOT3',      11);
+	define('MIDSLOT4',      12);
+	define('MIDSLOT5',      13);
+	define('MIDSLOT6',      14);
+	define('MIDSLOT7',      15);
+	define('MIDSLOT8',      16);
 	
-	define('LOWSLOT1',     17);
-	define('LOWSLOT2',     18);
-	define('LOWSLOT3',     19);
-	define('LOWSLOT4',     20);
-	define('LOWSLOT5',     21);
-	define('LOWSLOT6',     22);
-	define('LOWSLOT7',     23);
-	define('LOWSLOT8',     24);
+	define('LOWSLOT1',      17);
+	define('LOWSLOT2',      18);
+	define('LOWSLOT3',      19);
+	define('LOWSLOT4',      20);
+	define('LOWSLOT5',      21);
+	define('LOWSLOT6',      22);
+	define('LOWSLOT7',      23);
+	define('LOWSLOT8',      24);
 	
-	define('RIGSLOT1',     25);
-	define('RIGSLOT2',     26);
-	define('RIGSLOT3',     27);
+	define('RIGSLOT1',      25);
+	define('RIGSLOT2',      26);
+	define('RIGSLOT3',      27);
 	
-	define('SUBSYSTEM1',   28);
-	define('SUBSYSTEM2',   29);
-	define('SUBSYSTEM3',   30);
-	define('SUBSYSTEM4',   31);
-	define('SUBSYSTEM5',   32);
+	define('SUBSYSTEM1',    28);
+	define('SUBSYSTEM2',    29);
+	define('SUBSYSTEM3',    30);
+	define('SUBSYSTEM4',    31);
+	define('SUBSYSTEM5',    32);
 	
-	define('SERVICESLOT1', 33);
-	define('SERVICESLOT2', 34);
-	define('SERVICESLOT3', 35);
-	define('SERVICESLOT4', 36);
-	define('SERVICESLOT5', 37);
-	define('SERVICESLOT6', 38);
-	define('SERVICESLOT7', 39);
-	define('SERVICESLOT8', 40);
+	define('SERVICESLOT1',  33);
+	define('SERVICESLOT2',  34);
+	define('SERVICESLOT3',  35);
+	define('SERVICESLOT4',  36);
+	define('SERVICESLOT5',  37);
+	define('SERVICESLOT6',  38);
+	define('SERVICESLOT7',  39);
+	define('SERVICESLOT8',  40);
 	
-	define('FIGHTERTUBE1', 50);
-	define('FIGHTERTUBE2', 51);
-	define('FIGHTERTUBE3', 52);
-	define('FIGHTERTUBE4', 53);
-	define('FIGHTERTUBE5', 54);
+	define('FIGHTERTUBE1',  50);
+	define('FIGHTERTUBE2',  51);
+	define('FIGHTERTUBE3',  52);
+	define('FIGHTERTUBE4',  53);
+	define('FIGHTERTUBE5',  54);
 	
-	define('IMPLANTSLOT',  70);
+	define('IMPLANTSLOT',   70);
 
 	define('DRONEHOLD',    100);
 	define('FIGHTERHOLD',  101);
@@ -60,8 +60,14 @@
 	define('FLEETHOLD',    104);
 	define('FUELHOLD',     105);
 	define('OREHOLD',      106);
+  define('MINERALHOLD',  107);
+  define('AMMOHOLD',     108);
+  define('PIHOLD',       109);
+  define('SUBSYSTEMHOLD',110);
+  
+  define('CONTAINER',    200);
 	
-	define('UNKNOWNSLOT', 255);
+	define('UNKNOWNSLOT',  255);
 	
 	// IN:  flag field from API killmail
 	// OUT: slot id as used by the killfeed
@@ -99,6 +105,10 @@
 			case 33:
 			case 34:
 				return HIGHSLOT1+($flag-27);
+      // maybe only _secure_ containers? unsure, you see them so rarely
+      // (pretty sure this will only ever appear with parent != 0)
+      case 64:
+        return CONTAINER;
 			case 89:
 				return IMPLANTSLOT;
 			// rig slot (note: technically 95-99 are listed as additional "rig slots" in the game data)
@@ -124,8 +134,12 @@
 				return FUELHOLD;
 			case 134:
 				return OREHOLD;
-			case 149: // @todo double-check these (i took them from the sma parser code for whc) because there's double ore hold and that seems weird
-				return OREHOLD;
+      case 136:
+        return MINERALHOLD;
+      case 143:
+        return AMMOHOLD;
+			case 149:
+				return PIHOLD;
 			case 155:
 				return FLEETHOLD;
 			case 158:
@@ -145,6 +159,8 @@
 			case 170:
 			case 171:
 				return SERVICESLOT1+($flag-164);
+      case 177:
+        return SUBSYSTEMHOLD;
 			default:
 				return UNKNOWNSLOT;
 		}
@@ -273,6 +289,8 @@
 			case SERVICESLOT7:
 			case SERVICESLOT8:
 				return $plural ? 'Structure services' : 'Structure service';
+      case CONTAINER:
+        return 'Cargo container';
 			case IMPLANTSLOT:
 				return $plural ? 'Implants & Hardwirings' : 'Implant';
 			case DRONEHOLD:
@@ -281,6 +299,12 @@
 				return 'Fighter bay';
 			case CARGOHOLD:
 				return 'Cargo hold';
+      case MINERALHOLD:
+        return 'Mineral hold';
+      case AMMOHOLD:
+        return 'Ammo hold';
+      case PIHOLD:
+        return 'Planetary commodity hold';
 			case FLEETHOLD:
 				return 'Fleet hangar';
 			case SHIPHOLD:
@@ -289,6 +313,8 @@
 				return 'Fuel bay';
 			case OREHOLD:
 				return 'Ore hold';
+      case SUBSYSTEMHOLD:
+        return 'Subsystem hold';
 			case UNKNOWNSLOT:
 			default:
 				return 'Unknown location';

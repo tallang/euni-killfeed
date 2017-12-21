@@ -109,7 +109,7 @@ function redrawKillListing()
     if (lastKillDate != kill.relativeDate)
     {
       var label = document.createElement('div');
-      label.className = 'listing-date-label';
+      label.className = 'listing-date-label noselect';
       label.textContent = kill.relativeDate;
       listingContainer.appendChild(label);
       lastKillDate = kill.relativeDate;

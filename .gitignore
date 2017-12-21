@@ -3,3 +3,4 @@ cache/*
 *.log
 *.7z
 phpinfo.php
+config/config.inc.php

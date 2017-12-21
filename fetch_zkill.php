@@ -2,6 +2,7 @@
   require(__DIR__.'/render/setup.inc.php');
 	require(__DIR__.'/helpers/database.inc.php');
 	require(__DIR__.'/helpers/http.inc.php');
+  require(__DIR__.'/helpers/esi.inc.php');
 	require(__DIR__.'/helpers/killmailHandling.inc.php');
 	require(__DIR__.'/helpers/profiling.inc.php');
   
@@ -58,9 +59,9 @@
         echo "Now processing kill metadata...\n";
         foreach ($data as $kill)
         {
-          $killId = +$kill->killID;
+          $killId = +$kill->killmail_id;
           if (!$cutoffPageId && ($killId <= $cutoffKillId))
-            $cutoffPageId = $pageId+5; // arbitrary limit to try and catch mails being posted later
+            $cutoffPageId = $pageId+2; // arbitrary limit to try and catch mails being posted later
           
           ++$numKills;
           if (importKillmail($kill,MODE_ZKILLBOARD,$metadataCharacter,$metadataCorporation,$metadataAlliance) && $killId > $latestKillId)
@@ -86,7 +87,7 @@
 		{
 			$querySelectExistingCharacter->bindValue(':characterId',$characterMeta->characterId,PDO::PARAM_INT);
 			if (!$querySelectExistingCharacter->execute())
-				echo "DB error updating metadata for P'",$characterMeta->characterName,"' (",$characterMeta->characterId,"): ",$querySelectExistingCharacter->errorInfo()[2],"\n";
+				echo "DB error updating metadata for P'",$characterMeta->Id,"' (",$characterMeta->characterId,"): ",$querySelectExistingCharacter->errorInfo()[2],"\n";
 			else
 			{
 				if ($querySelectExistingCharacter->rowCount())
@@ -112,12 +113,15 @@
 					$queryUpdateExistingCharacter->bindValue(':averageFriendCount',($existingCharacter->killCount ? $friendCount/$existingCharacter->killCount : 0),PDO::PARAM_STR);
 					$queryUpdateExistingCharacter->bindValue(':averageEnemyCount',($existingCharacter->lossCount ? $enemyCount/$existingCharacter->lossCount : 0),PDO::PARAM_STR);
 					if (!$queryUpdateExistingCharacter->execute())
-						echo "DB error updating metadata for P'",$characterMeta->characterName,"' (",$characterMeta->characterId,"): ",$queryUpdateExistingCharacter->errorInfo()[2],"\n";
+						echo "DB error updating metadata for P'",$characterMeta->characterId,"' (",$characterMeta->characterId,"): ",$queryUpdateExistingCharacter->errorInfo()[2],"\n";
+          else
+            echo "Character #",$characterMeta->characterId,": ",$existingCharacter->characterName."\n";
 				}
 				else
 				{
+          $characterName = getCharacterName($characterMeta->characterId);
 					$queryInsertNewCharacter->bindValue(':characterId',$characterMeta->characterId,PDO::PARAM_INT);
-					$queryInsertNewCharacter->bindValue(':characterName',$characterMeta->characterName,PDO::PARAM_STR);
+					$queryInsertNewCharacter->bindValue(':characterName',$characterName,PDO::PARAM_STR);
 					$queryInsertNewCharacter->bindValue(':corporationId',$characterMeta->corporationId,PDO::PARAM_INT);
 					$queryInsertNewCharacter->bindValue(':allianceId',$characterMeta->allianceId,PDO::PARAM_INT);
 					$queryInsertNewCharacter->bindValue(':killCount',$characterMeta->killCount,PDO::PARAM_INT);
@@ -128,7 +132,9 @@
 					$queryInsertNewCharacter->bindValue(':averageFriendCount',($characterMeta->killCount ? $characterMeta->friendCount/$characterMeta->killCount : 0), PDO::PARAM_STR);
 					$queryInsertNewCharacter->bindValue(':averageEnemyCount',($characterMeta->lossCount ? $characterMeta->enemyCount/$characterMeta->lossCount : 0), PDO::PARAM_STR);
 					if (!$queryInsertNewCharacter->execute())
-						echo "DB error inserting metadata for P'",$characterMeta->characterName,"' (",$characterMeta->characterId,"): ",$queryInsertNewCharacter->errorInfo()[2],"\n";
+						echo "DB error inserting metadata for P'",$characterMeta->characterId,"' (",$characterMeta->characterId,"): ",$queryInsertNewCharacter->errorInfo()[2],"\n";
+          else
+            echo "Character #",$characterMeta->characterId,": ",$characterName,"\n";
 				}
 			}
 		}
@@ -140,7 +146,7 @@
 		{
 			$querySelectExistingCorporation->bindValue(':corporationId',$corporationMeta->corporationId,PDO::PARAM_INT);
 			if (!$querySelectExistingCorporation->execute())
-				echo "DB error updating metadata for C'",$corporationMeta->corporationName,"' (",$corporationMeta->corporationId,"): ",$querySelectExistingCorporation->errorInfo()[2],"\n";
+				echo "DB error updating metadata for C'",$corporationMeta->corporationId,"' (",$corporationMeta->corporationId,"): ",$querySelectExistingCorporation->errorInfo()[2],"\n";
 			else
 			{
 				if ($querySelectExistingCorporation->rowCount())
@@ -165,12 +171,15 @@
 					$queryUpdateExistingCorporation->bindValue(':averageFriendCount',($existingCorporation->killCount ? $friendCount/$existingCorporation->killCount : 0),PDO::PARAM_STR);
 					$queryUpdateExistingCorporation->bindValue(':averageEnemyCount',($existingCorporation->lossCount ? $enemyCount/$existingCorporation->lossCount : 0),PDO::PARAM_STR);
 					if (!$queryUpdateExistingCorporation->execute())
-						echo "DB error updating metadata for C'",$corporationMeta->corporationName,"' (",$corporationMeta->corporationId,"): ",$queryUpdateExistingCorporation->errorInfo()[2],"\n";
+						echo "DB error updating metadata for C'",$corporationMeta->corporationId,"' (",$corporationMeta->corporationId,"): ",$queryUpdateExistingCorporation->errorInfo()[2],"\n";
+          else
+            echo "Corporation #",$corporationMeta->corporationId,": ",$existingCorporation->corporationName,"\n";
 				}
 				else
 				{
+          $corporationName = getCorporationName($corporationMeta->corporationId);
 					$queryInsertNewCorporation->bindValue(':corporationId',$corporationMeta->corporationId,PDO::PARAM_INT);
-					$queryInsertNewCorporation->bindValue(':corporationName',$corporationMeta->corporationName,PDO::PARAM_STR);
+					$queryInsertNewCorporation->bindValue(':corporationName',$corporationName,PDO::PARAM_STR);
 					$queryInsertNewCorporation->bindValue(':allianceId',$corporationMeta->allianceId,PDO::PARAM_INT);
 					$queryInsertNewCorporation->bindValue(':killCount',$corporationMeta->killCount,PDO::PARAM_INT);
 					$queryInsertNewCorporation->bindValue(':lossCount',$corporationMeta->lossCount,PDO::PARAM_INT);
@@ -180,7 +189,9 @@
 					$queryInsertNewCorporation->bindValue(':averageFriendCount',($corporationMeta->killCount ? $corporationMeta->friendCount/$corporationMeta->killCount : 0), PDO::PARAM_STR);
 					$queryInsertNewCorporation->bindValue(':averageEnemyCount',($corporationMeta->lossCount ? $corporationMeta->enemyCount/$corporationMeta->lossCount : 0), PDO::PARAM_STR);
 					if (!$queryInsertNewCorporation->execute())
-						echo "DB error inserting metadata for C'",$corporationMeta->corporationName,"' (",$corporationMeta->corporationId,"): ",$queryInsertNewCorporation->errorInfo()[2],"\n";
+						echo "DB error inserting metadata for C'",$corporationMeta->corporationId,"' (",$corporationMeta->corporationId,"): ",$queryInsertNewCorporation->errorInfo()[2],"\n";
+          else
+            echo "Corporation #",$corporationMeta->corporationId,": ",$corporationName,"\n";
 				}
 			}
 		}
@@ -192,7 +203,7 @@
 		{
 			$querySelectExistingAlliance->bindValue(':allianceId',$allianceMeta->allianceId,PDO::PARAM_INT);
 			if (!$querySelectExistingAlliance->execute())
-				echo "DB error updating metadata for A'",$allianceMeta->allianceName,"' (",$allianceMeta->allianceId,"): ",$querySelectExistingAlliance->errorInfo()[2],"\n";
+				echo "DB error updating metadata for A'",$allianceMeta->allianceId,"' (",$allianceMeta->allianceId,"): ",$querySelectExistingAlliance->errorInfo()[2],"\n";
 			else
 			{
 				if ($querySelectExistingAlliance->rowCount())
@@ -216,12 +227,15 @@
 					$queryUpdateExistingAlliance->bindValue(':averageFriendCount',($existingAlliance->killCount ? $friendCount/$existingAlliance->killCount : 0),PDO::PARAM_STR);
 					$queryUpdateExistingAlliance->bindValue(':averageEnemyCount',($existingAlliance->lossCount ? $enemyCount/$existingAlliance->lossCount : 0),PDO::PARAM_STR);
 					if (!$queryUpdateExistingAlliance->execute())
-						echo "DB error updating metadata for A'",$allianceMeta->allianceName,"' (",$allianceMeta->allianceId,"): ",$queryUpdateExistingAlliance->errorInfo()[2],"\n";
+						echo "DB error updating metadata for A'",$allianceMeta->allianceId,"' (",$allianceMeta->allianceId,"): ",$queryUpdateExistingAlliance->errorInfo()[2],"\n";
+          else
+            echo "Alliance #",$allianceMeta->allianceId,": ",$existingAlliance->allianceName,"\n";
 				}
 				else
 				{
+          $allianceName = getAllianceName($allianceMeta->allianceId);
 					$queryInsertNewAlliance->bindValue(':allianceId',$allianceMeta->allianceId,PDO::PARAM_INT);
-					$queryInsertNewAlliance->bindValue(':allianceName',$allianceMeta->allianceName,PDO::PARAM_STR);
+					$queryInsertNewAlliance->bindValue(':allianceName',$allianceName,PDO::PARAM_STR);
 					$queryInsertNewAlliance->bindValue(':killCount',$allianceMeta->killCount,PDO::PARAM_INT);
 					$queryInsertNewAlliance->bindValue(':lossCount',$allianceMeta->lossCount,PDO::PARAM_INT);
 					$queryInsertNewAlliance->bindValue(':killValue',$allianceMeta->killValue,PDO::PARAM_STR);
@@ -230,7 +244,9 @@
 					$queryInsertNewAlliance->bindValue(':averageFriendCount',($allianceMeta->killCount ? $allianceMeta->friendCount/$allianceMeta->killCount : 0), PDO::PARAM_STR);
 					$queryInsertNewAlliance->bindValue(':averageEnemyCount',($allianceMeta->lossCount ? $allianceMeta->enemyCount/$allianceMeta->lossCount : 0), PDO::PARAM_STR);
 					if (!$queryInsertNewAlliance->execute())
-						echo "DB error inserting metadata for A'",$allianceMeta->allianceName,"' (",$allianceMeta->allianceId,"): ",$queryInsertNewAlliance->errorInfo()[2],"\n";
+						echo "DB error inserting metadata for A'",$allianceMeta->allianceId,"' (",$allianceMeta->allianceId,"): ",$queryInsertNewAlliance->errorInfo()[2],"\n";
+          else
+            echo "Alliance #",$allianceMeta->allianceId,": ",$allianceName,"\n";
 				}
 			}
 		}

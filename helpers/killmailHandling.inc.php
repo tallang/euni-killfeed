@@ -5,6 +5,7 @@
 	require_once(__DIR__.'/iskvalue.inc.php');
 	require_once(__DIR__.'/slotinfo.inc.php');
 	require_once(__DIR__.'/cache.inc.php');
+  require_once(__DIR__.'/esi.inc.php');
 	/* DB needs the following values for a kill:
 		table `kill_metadata`:
 			- killId (XML row attribute killID)
@@ -37,61 +38,35 @@
 			- dropped (XML item row attribute qtyDropped/qtyDestroyed, split possibly)
 			- value (fetched using typeId)
 	*/
-  define('MODE_XMLAPI',1);
-  define('MODE_CREST',2);
   define('MODE_ZKILLBOARD',3);
 	function recurseItems($items,$parent,$killId,&$index,$mode,&$valueDropped,&$valueDestroyed,&$valueFitted,&$valueTotal)
 	{
 		$db = killfeedDB();
 		foreach ($items as $item)
 		{
-      if ($mode == MODE_ZKILLBOARD)
+      switch ($mode)
       {
-        $typeId = $item->typeID;
-        $slotFlag = $item->flag;
-        $quantityDropped = isset($item->qtyDropped) ? $item->qtyDropped : 0;
-        $quantityDestroyed = isset($item->qtyDestroyed) ? $item->qtyDestroyed : 0;
-        if (isset($item->items))
-        {
-          $hasChildren = true;
-          $children = $item->items;
-        }
-        else
-        {
-          $hasChildren = false;
-          $children = null;
-        }
-        $isBPC = ($item->singleton == 2);
+        case MODE_ZKILLBOARD:
+          $typeId = $item->item_type_id;
+          $slotFlag = $item->flag;
+          $quantityDropped = isset($item->quantity_dropped) ? $item->quantity_dropped : 0;
+          $quantityDestroyed = isset($item->quantity_destroyed) ? $item->quantity_destroyed : 0;
+          if (isset($item->items))
+          {
+            $hasChildren = true;
+            $children = $item->items;
+          }
+          else
+          {
+            $hasChildren = false;
+            $children = null;
+          }
+          $isBPC = ($item->singleton == 2);
+          break;
+        default:
+          return;
       }
-			else if ($mode == MODE_CREST)
-			{
-				$typeId = $item->itemType->id;
-				$slotFlag = $item->flag;
-				$quantityDropped = isset($item->quantityDropped) ? $item->quantityDropped : 0;
-				$quantityDestroyed = isset($item->quantityDestroyed) ? $item->quantityDestroyed : 0;
-				if (isset($item->items))
-				{
-					$hasChildren = true;
-					$children = $item->items;
-				}
-				else
-				{
-					$hasChildren = false;
-					$children = null;
-				}
-				$isBPC = ($item->singleton == 2);
-			}
-			else
-			{
-				$typeId = (int)$item['typeID'];
-				$slotFlag = (int)$item['flag'];
-				$quantityDropped = (int)$item['qtyDropped'];
-				$quantityDestroyed = (int)$item['qtyDestroyed'];
-				$isBPC = ($item['singleton'] == 2);
-				// @todo children parsing for XMLAPI
-				$hasChildren = false;
-				$children = null;
-			}
+      
 			$slotId = convertCCPFlagToSlot($slotFlag);
 			$isFitted = !$parent && isSlotFittingSlot($slotId);
 			if ($slotFlag && $slotId == UNKNOWNSLOT)
@@ -195,10 +170,14 @@
 	function importKillmail($kill,$mode,&$metadataCharacter = null,&$metadataCorporation = null,&$metadataAlliance = null)
 	{
 		$db = killfeedDB();
-    if ($mode == MODE_ZKILLBOARD || $mode == MODE_CREST)
-			$killId = $kill->killID;
-		else
-			$killId = (int)$kill['killID'];
+    switch ($mode)
+    {
+      case MODE_ZKILLBOARD:
+        $killId = $kill->killmail_id;
+        break;
+      default:
+        return;
+    }
 		
 		/* Step 0: Make sure this kill isn't a duplicate, skip otherwise. */
 		doStatus("Processing ",$killId,"...");
@@ -226,144 +205,43 @@
 		try
 		{
 			/* Step 1: Get kill metadata, determine hull price and closest celestial. */
-      if ($mode == MODE_ZKILLBOARD)
+      switch ($mode)
       {
-        $victim = $kill->victim;
-				if (isset($victim->characterID))
-				{
-					$victimCharacterId = $victim->characterID;
-					$victimCharacterName = $victim->characterName;
-				}
-				else
-				{
-					$victimCharacterId = 0;
-					$victimCharacterName = '';
-				}
-				if (isset($victim->corporationID))
-					$victimCorporationId = $victim->corporationID;
-				else
-					$victimCorporationId = 0;
-				if ($victimCorporationId)
-					$victimCorporationName = $victim->corporationName;
-				else
-					$victimCorporationName = null;
-				
-				if (isset($victim->allianceID))
-					$victimAllianceId = $victim->allianceID;
-				else
-					$victimAllianceId = 0;
-				if ($victimAllianceId)
-					$victimAllianceName = $victim->allianceName;
-				else
-					$victimAllianceName = null;
-				
-				$shipTypeId = $victim->shipTypeID;
-				$solarSystemId = $kill->solarSystemID;
-				$killTime = $kill->killTime;
-				$damageTaken = $victim->damageTaken;
-				$numKillers = isset($kill->attackers) ? sizeof($kill->attackers) : 0;
-				
-				if (isset($victim->position))
-				{
-					$killX = $victim->position->x;
-					$killY = $victim->position->y;
-					$killZ = $victim->position->z;
-				}
-				else
-					$killX = $killY = $killZ = 0;
+        case MODE_ZKILLBOARD:
+          $victim = $kill->victim;
+          if (isset($victim->character_id))
+            $victimCharacterId = $victim->character_id;
+          else
+            $victimCharacterId = 0;
+          
+          if (isset($victim->corporation_id))
+            $victimCorporationId = $victim->corporation_id;
+          else
+            $victimCorporationId = 0;
+          
+          if (isset($victim->alliance_id))
+            $victimAllianceId = $victim->alliance_id;
+          else
+            $victimAllianceId = 0;
+          
+          $shipTypeId = $victim->ship_type_id;
+          $solarSystemId = $kill->solar_system_id;
+          $killTime = $kill->killmail_time;
+          $damageTaken = $victim->damage_taken;
+          $numKillers = isset($kill->attackers) ? sizeof($kill->attackers) : 0;
+          
+          if (isset($victim->position))
+          {
+            $killX = $victim->position->x;
+            $killY = $victim->position->y;
+            $killZ = $victim->position->z;
+          }
+          else
+            $killX = $killY = $killZ = 0;
+          break;
+        default:
+          return;
       }
-			else if ($mode == MODE_CREST)
-			{
-				$victim = $kill->victim;
-				if (isset($victim->character))
-				{
-					$victimCharacterId = $victim->character->id;
-					$victimCharacterName = $victim->character->name;
-				}
-				else
-				{
-					$victimCharacterId = 0;
-					$victimCharacterName = '';
-				}
-				if (isset($victim->corporation))
-					$victimCorporationId = $victim->corporation->id;
-				else
-					$victimCorporationId = 0;
-				if ($victimCorporationId)
-					$victimCorporationName = $victim->corporation->name;
-				else
-					$victimCorporationName = null;
-				
-				if (isset($victim->alliance))
-					$victimAllianceId = $victim->alliance->id;
-				else
-					$victimAllianceId = 0;
-				if ($victimAllianceId)
-					$victimAllianceName = $victim->alliance->name;
-				else
-					$victimAllianceName = null;
-				
-				$shipTypeId = $victim->shipType->id;
-				$solarSystemId = $kill->solarSystem->id;
-				$killTime = $kill->killTime;
-				$damageTaken = $victim->damageTaken;
-				$numKillers = $kill->attackerCount;
-				
-				if (isset($victim->position))
-				{
-					$killX = $victim->position->x;
-					$killY = $victim->position->y;
-					$killZ = $victim->position->z;
-				}
-				else
-					$killX = $killY = $killZ = 0;
-			}
-			else
-			{
-				$victim = $kill->victim;					
-				if (isset($victim['characterID']))
-				{
-					$victimCharacterId = (int)$victim['characterID'];
-					$victimCharacterName = $victim['characterName'];
-				}
-				else
-				{
-					$victimCharacterId = 0;
-					$victimCharacterName = '';
-				}
-				
-				if (isset($victim['corporationID']))
-					$victimCorporationId = (int)$victim['corporationID'];
-				else
-					$victimCorporationId = 0;
-				if ($victimCorporationId)
-					$victimCorporationName = $victim['corporationName'];
-				else
-					$victimCorporationName = null;
-				
-				if (isset($victim['allianceID']))
-					$victimAllianceId = (int)$victim['allianceID'];
-				else
-					$victimAllianceId = 0;
-				if ($victimAllianceId)
-					$victimAllianceName = $victim['allianceName'];
-				else
-					$victimAllianceName = null;
-				
-				$shipTypeId = (int)$victim['shipTypeID'];
-				$solarSystemId = (int)$kill['solarSystemID'];
-				$killTime = $kill['killTime'];
-				$damageTaken = (int)$victim['damageTaken'];
-				$numKillers = count($kill->rowset[0]->row);
-				if (isset($victim['x']))
-				{
-					$killX = (double)$victim['x'];
-					$killY = (double)$victim['y'];
-					$killZ = (double)$victim['z'];
-				}
-				else
-					$killX = $killY = $killZ = 0;
-			}
 			
 			$closestCelestial = $closestCelestialDistance = 0;
 			findClosestCelestial($solarSystemId, $killX, $killY, $killZ, $closestCelestial, $closestCelestialDistance);
@@ -371,11 +249,18 @@
 			$valueTotal = $valueDestroyed = $valueHull = getValueForType($shipTypeId);
 			$valueDropped = $valueFitted = 0;
 			
-			doStatus("Data - ",$killTime,": ",$victimCharacterName," (",$victimCorporationName,") died in '",getCachedItemName($shipTypeId),"'.\n");
+			doStatus("Done (from $killTime)\n");
 			
 			/* Step 2: iterate over all items on the killmail, add up the values, and insert them into DB */
 			$index = 0;
-			recurseItems($mode == MODE_ZKILLBOARD ? $kill->items : ($mode == MODE_CREST ? $victim->items : $kill->rowset[1]->row), 0, $killId, $index, $mode, $valueDropped, $valueDestroyed, $valueFitted, $valueTotal);
+      switch ($mode)
+      {
+        case MODE_ZKILLBOARD:
+          recurseItems($kill->victim->items, 0, $killId, $index, $mode, $valueDropped, $valueDestroyed, $valueFitted, $valueTotal);
+          break;
+        default:
+          return;
+      }
 			
 			/* Step 3: iterate over all killers involved, track their damage and insert them into DB */
 			$numPlayerKillers = 0;
@@ -383,122 +268,47 @@
 			// save killers' corp/alliance membership to be used in effective value further down, as well as for metadata updating
 			$corporationMemberCache = array();   // char -> corporation
 			$allianceMemberCache = array();      // char -> alliance
-			$corporationNameCache = array();     // corp -> corp name
-			$allianceNameCache = array();        // alli -> alliance name
 			$corporationAllianceCache = array(); // corp -> alliance
 			$totalPlayerDamageDone = 0; // this is used to calculate effective value destroyed for stats
 			$killerShipTypeCount = array();
-			foreach ((($mode == MODE_ZKILLBOARD || $mode == MODE_CREST) ? $kill->attackers : $kill->rowset[0]->row) as $killer)
+			foreach ((($mode == MODE_ZKILLBOARD) ? $kill->attackers : null) as $killer)
 			{
-        if ($mode == MODE_ZKILLBOARD)
+        switch ($mode)
         {
-          if ($killer->characterID)
-					{
-						$killerCharacterId = $killer->characterID;
-						$killerCharacterName = $killer->characterName;
-					}
-					else
-					{
-						$killerCharacterId = 0;
-						$killerCharacterName = getCachedItemName($killer->shipTypeID);
-					}
-          $killerShipTypeId = $killer->shipTypeID;
-					
-					if ($killer->weaponTypeID)
-						$killerWeaponTypeId = $killer->weaponTypeID;
-					else
-						$killerWeaponTypeId = $killerShipTypeId;
-          
-					if ($killer->corporationID)
-					{
-						$killerCorporationId = $killer->corporationID;
-						$killerCorporationName = $killer->corporationName;
-					}
-					else
-					{
-						$killerCorporationId = 0;
-						$killerCorporationName = null;
-					}
-					if ($killer->allianceID)
-					{
-						$killerAllianceId = $killer->allianceID;
-						$killerAllianceName = $killer->allianceName;
-					}
-					else
-					{
-						$killerAllianceId = 0;
-						$killerAllianceName = null;
-					}
-					$damageDone = $killer->damageDone;
-					$finalBlow = $killer->finalBlow;
+          case MODE_ZKILLBOARD:
+            if (isset($killer->character_id) && $killer->character_id)
+              $killerCharacterId = $killer->character_id;
+            else
+              $killerCharacterId = 0;
+              
+            if (isset($killer->ship_type_id))
+              $killerShipTypeId = $killer->ship_type_id;
+            else
+              $killerShipTypeId = 0;
+            
+            if (isset($killer->weapon_type_id) && $killer->weapon_type_id)
+              $killerWeaponTypeId = $killer->weapon_type_id;
+            else
+              $killerWeaponTypeId = $killerShipTypeId;
+            
+            if (isset($killer->corporation_id) && $killer->corporation_id)
+              $killerCorporationId = $killer->corporation_id;
+            else
+              $killerCorporationId = 0;
+
+            if (isset($killer->alliance_id) && $killer->alliance_id)
+              $killerAllianceId = $killer->alliance_id;
+            else
+              $killerAllianceId = 0;
+
+            $damageDone = $killer->damage_done;
+            $finalBlow = $killer->final_blow;
+            break;
+          default:
+            return;
         }
-				else if ($mode == MODE_CREST)
-				{
-					if (isset($killer->character))
-					{
-						$killerCharacterId = $killer->character->id;
-						$killerCharacterName = $killer->character->name;
-					}
-					else
-					{
-						$killerCharacterId = 0;
-						$killerCharacterName = $killer->shipType->name;
-					}
-					if (isset($killer->shipType))
-						$killerShipTypeId = $killer->shipType->id;
-					else
-						$killerShipTypeId = 0;
-					if (isset($killer->weaponType))
-						$killerWeaponTypeId = $killer->weaponType->id;
-					else
-						$killerWeaponTypeId = $killerShipTypeId;
-					if (isset($killer->corporation))
-					{
-						$killerCorporationId = $killer->corporation->id;
-						$killerCorporationName = $killer->corporation->name;
-					}
-					else
-					{
-						$killerCorporationId = 0;
-						$killerCorporationName = null;
-					}
-					if (isset($killer->alliance))
-					{
-						$killerAllianceId = $killer->alliance->id;
-						$killerAllianceName = $killer->alliance->name;
-					}
-					else
-					{
-						$killerAllianceId = 0;
-						$killerAllianceName = null;
-					}
-					$damageDone = $killer->damageDone;
-					$finalBlow = $killer->finalBlow;
-				}
-				else
-				{
-					if (isset($killer['characterID']))
-						$killerCharacterId = (int)$killer['characterID'];
-					else
-						$killerCharacterId = 0;
-					$killerShipTypeId = (int)$killer['shipTypeID'];
-					if ($killerCharacterId && isset($killer['characterName']) && !empty($killer['characterName']))
-						$killerCharacterName = $killer['characterName'];
-					else
-						$killerCharacterName = getCachedItemName($killerShipTypeId);
-					$killerWeaponTypeId = (int)$killer['weaponTypeID'];
-					$killerCorporationId = (int)$killer['corporationID'];
-					$killerCorporationName = $killer['corporationName'];
-					$killerAllianceId = (int)$killer['allianceID'];
-					$killerAllianceName = $killer['allianceName'];
-					$damageDone = (int)$killer['damageDone'];
-					$finalBlow = ($killer['finalBlow'] == '1');
-				}
+
 				$killerIsNPC = ($killerCharacterId == 0);
-				if ($killerCorporationId)
-					$corporationNameCache[$killerCorporationId] = $killerCorporationName;
-				if ($killerAllianceId)
-					$allianceNameCache[$killerAllianceId] = $killerAllianceName;
 				if (!$killerIsNPC)
 				{
 					$numPlayerKillers++;
@@ -519,7 +329,7 @@
 					if (!$queryInsertNPCKiller)
 						$queryInsertNPCKiller = prepareQuery($db,'INSERT INTO `kill_killers` (`killId`,`killerCharacterId`,`killerCharacterName`,`killerShipTypeId`,`killerWeaponTypeId`,`killerCorporationId`,`killerAllianceId`,`damageDone`,`damageFractional`,`finalBlow`) VALUES (?,0,?,?,?,?,?,?,?,?);');
 					$queryInsertNPCKiller->bindValue(1,$killId,PDO::PARAM_INT);
-					$queryInsertNPCKiller->bindValue(2,$killerCharacterName,PDO::PARAM_STR);
+					$queryInsertNPCKiller->bindValue(2,getCachedItemName($killerShipTypeId),PDO::PARAM_STR);
 					$queryInsertNPCKiller->bindValue(3,$killerShipTypeId,PDO::PARAM_INT);
 					$queryInsertNPCKiller->bindValue(4,$killerWeaponTypeId,PDO::PARAM_INT);
 					$queryInsertNPCKiller->bindValue(5,$killerCorporationId,PDO::PARAM_INT);
@@ -548,14 +358,22 @@
 					{ // do this in single kill inserts
 						static $queryInsertCharacterMetadataKiller = null;
 						if (!$queryInsertCharacterMetadataKiller)
-							$queryInsertCharacterMetadataKiller = prepareQuery($db,'INSERT INTO `character_metadata` (`characterId`,`characterName`,`corporationId`,`allianceId`,`killCount`,`lossCount`,`killValue`,`effectiveKillValue`,`lossValue`,`averageKillValue`,`averageFriendCount`,`averageLossValue`,`averageEnemyCount`) VALUES (?,?,?,?,1,0,?,0,0,0,0,0,0)
+							$queryInsertCharacterMetadataKiller = prepareQuery($db,'INSERT INTO `character_metadata` (`characterId`,`characterName`,`corporationId`,`allianceId`,`killCount`,`lossCount`,`killValue`,`effectiveKillValue`,`lossValue`,`averageKillValue`,`averageFriendCount`,`averageLossValue`,`averageEnemyCount`) VALUES (?,"",?,?,1,0,?,0,0,0,0,0,0)
 																					ON DUPLICATE KEY UPDATE `corporationId`=VALUES(`corporationId`), `allianceId`=VALUES(`allianceId`), `killCount`=`killCount`+1, `killValue`=`killValue`+VALUES(`killValue`);');
 						$queryInsertCharacterMetadataKiller->bindValue(1,$killerCharacterId,PDO::PARAM_INT);
-						$queryInsertCharacterMetadataKiller->bindValue(2,$killerCharacterName,PDO::PARAM_STR);
-						$queryInsertCharacterMetadataKiller->bindValue(3,$killerCorporationId,PDO::PARAM_INT);
-						$queryInsertCharacterMetadataKiller->bindValue(4,$killerAllianceId,PDO::PARAM_INT);
-						$queryInsertCharacterMetadataKiller->bindValue(5,$valueTotal,PDO::PARAM_STR);
+						$queryInsertCharacterMetadataKiller->bindValue(2,$killerCorporationId,PDO::PARAM_INT);
+						$queryInsertCharacterMetadataKiller->bindValue(3,$killerAllianceId,PDO::PARAM_INT);
+						$queryInsertCharacterMetadataKiller->bindValue(4,$valueTotal,PDO::PARAM_STR);
 						$queryInsertCharacterMetadataKiller->execute();
+            if ($queryInsertCharacterMetadataKiller->rowCount() == 1)
+            { // new character
+              static $queryUpdateCharacterNameKiller = null;
+              if (!$queryUpdateCharacterNameKiller)
+                $queryUpdateCharacterNameKiller = prepareQuery($db,'UPDATE `character_metadata` SET `characterName`=? WHERE `characterId`=?;');
+              $queryUpdateCharacterNameKiller->bindValue(1,getCharacterName($killerCharacterId),PDO::PARAM_STR);
+              $queryUpdateCharacterNameKiller->bindValue(2,$killerCharacterId,PDO::PARAM_INT);
+              $queryUpdateCharacterNameKiller->execute();
+            }
 					}
 					else
 					{ // otherwise, push it onto the bulk array to be handled later (performance improvement)
@@ -568,7 +386,6 @@
 						{
 							$metadataCharacter[$killerCharacterId] = new DBEntityMetadata();
 							$metadataCharacter[$killerCharacterId]->characterId = $killerCharacterId;
-							$metadataCharacter[$killerCharacterId]->characterName = $killerCharacterName;
 							$metadataCharacter[$killerCharacterId]->corporationId = $killerCorporationId;
 							$metadataCharacter[$killerCharacterId]->allianceId = $killerAllianceId;
 							$metadataCharacter[$killerCharacterId]->killCount = 1;
@@ -669,17 +486,26 @@
 				{
 					static $queryUpdateCharacterMetadataVictim = null;
 					if (!$queryUpdateCharacterMetadataVictim)
-						$queryUpdateCharacterMetadataVictim = prepareQuery($db,'INSERT INTO `character_metadata` (`characterId`,`characterName`,`corporationId`,`allianceId`,`killCount`,`lossCount`,`killValue`,`effectiveKillValue`,`lossValue`,`averageKillValue`,`averageFriendCount`,`averageLossValue`,`averageEnemyCount`) VALUES (?,?,?,?,0,1,0,0,?,0,0,?,?)
+						$queryUpdateCharacterMetadataVictim = prepareQuery($db,'INSERT INTO `character_metadata` (`characterId`,`characterName`,`corporationId`,`allianceId`,`killCount`,`lossCount`,`killValue`,`effectiveKillValue`,`lossValue`,`averageKillValue`,`averageFriendCount`,`averageLossValue`,`averageEnemyCount`) VALUES (?,"",?,?,0,1,0,0,?,0,0,?,?)
 																ON DUPLICATE KEY UPDATE `corporationId`=VALUES(`corporationId`), `allianceId`=VALUES(`allianceId`), `lossCount`=`lossCount`+1, `lossValue`=`lossValue`+VALUES(`lossValue`), `averageLossValue`=((`lossValue`+VALUES(`lossValue`))/(`lossCount`+1)), `averageEnemyCount`=((`averageEnemyCount`*`lossCount`)+VALUES(`averageEnemyCount`))/(`lossCount`+1);');
 					$queryUpdateCharacterMetadataVictim->bindValue(1,$victimCharacterId,PDO::PARAM_INT);
-					$queryUpdateCharacterMetadataVictim->bindValue(2,$victimCharacterName,PDO::PARAM_STR);
-					$queryUpdateCharacterMetadataVictim->bindValue(3,$victimCorporationId,PDO::PARAM_INT);
-					$queryUpdateCharacterMetadataVictim->bindValue(4,$victimAllianceId,PDO::PARAM_INT);
+					$queryUpdateCharacterMetadataVictim->bindValue(2,$victimCorporationId,PDO::PARAM_INT);
+					$queryUpdateCharacterMetadataVictim->bindValue(3,$victimAllianceId,PDO::PARAM_INT);
+					$queryUpdateCharacterMetadataVictim->bindValue(4,$valueTotal,PDO::PARAM_STR);
 					$queryUpdateCharacterMetadataVictim->bindValue(5,$valueTotal,PDO::PARAM_STR);
-					$queryUpdateCharacterMetadataVictim->bindValue(6,$valueTotal,PDO::PARAM_STR);
-					$queryUpdateCharacterMetadataVictim->bindValue(7,$numPlayerKillers,PDO::PARAM_INT);
+					$queryUpdateCharacterMetadataVictim->bindValue(6,$numPlayerKillers,PDO::PARAM_INT);
 					if(!$queryUpdateCharacterMetadataVictim->execute())
 						throw new RuntimeException('DB error inserting victim char meta: '.$queryUpdateCharacterMetadataVictim->errorInfo()[2]);
+          if ($queryUpdateCharacterMetadataVictim->rowCount() == 1)
+          {
+            // new character
+            static $queryUpdateCharacterNameVictim = null;
+            if (!$queryUpdateCharacterNameVictim)
+              $queryUpdateCharacterNameVictim = prepareQuery($db,'UPDATE `character_metadata` SET `characterName`=? WHERE `characterId`=?;');
+            $queryUpdateCharacterNameVictim->bindValue(1,getCharacterName($victimCharacterId),PDO::PARAM_STR);
+            $queryUpdateCharacterNameVictim->bindValue(2,$victimCharacterId,PDO::PARAM_INT);
+            $queryUpdateCharacterNameVictim->execute();
+          }
 				}
 				else
 				{
@@ -693,7 +519,6 @@
 					{
 						$metadataCharacter[$victimCharacterId] = new DBEntityMetadata();
 						$metadataCharacter[$victimCharacterId]->characterId = $victimCharacterId;
-						$metadataCharacter[$victimCharacterId]->characterName = $victimCharacterName;
 						$metadataCharacter[$victimCharacterId]->corporationId = $victimCorporationId;
 						$metadataCharacter[$victimCharacterId]->allianceId = $victimAllianceId;
 						$metadataCharacter[$victimCharacterId]->killCount = 0;
@@ -722,6 +547,15 @@
 					$queryUpdateCorporationMetadataVictim->bindValue(5,$numPlayerKillers,PDO::PARAM_INT);
 					$queryUpdateCorporationMetadataVictim->bindValue(6,$valueTotal,PDO::PARAM_STR);
 					$queryUpdateCorporationMetadataVictim->execute();
+          if ($queryUpdateCorporationMetadataVictim->rowCount() == 1)
+          { // new corporation
+              static $queryUpdateCorporationNameVictim = null;
+              if (!$queryUpdateCorporationNameVictim)
+                $queryUpdateCorporationNameVictim = prepareQuery($db,'UPDATE `corporation_metadata` SET `corporationName`=? WHERE `corporationId`=?;');
+              $queryUpdateCorporationNameVictim->bindValue(1,getCorporationName($victimCorporationId),PDO::PARAM_STR);
+              $queryUpdateCorporationNameVictim->bindValue(2,$victimCorporationId,PDO::PARAM_INT);
+              $queryUpdateCorporationNameVictim->execute();
+          }
 				}
 				else
 				{
@@ -740,7 +574,7 @@
 					{
 						$metadataCorporation[$victimCorporationId] = new DBEntityMetadata();
 						$metadataCorporation[$victimCorporationId]->corporationId = $victimCorporationId;
-						$metadataCorporation[$victimCorporationId]->corporationName = $victimCorporationName;
+						$metadataCorporation[$victimCorporationId]->corporationName = getCorporationName($victimCorporationId);
 						$metadataCorporation[$victimCorporationId]->allianceId = $victimAllianceId;
 						$metadataCorporation[$victimCorporationId]->killCount = 0;
 						$metadataCorporation[$victimCorporationId]->killValue = 0;
@@ -759,14 +593,22 @@
 				{
 					static $queryUpdateAllianceMetadataVictim = null;
 					if (!$queryUpdateAllianceMetadataVictim)
-						$queryUpdateAllianceMetadataVictim = prepareQuery($db,'INSERT INTO `alliance_metadata` (`allianceId`,`allianceName`,`killCount`,`lossCount`,`killValue`,`effectiveKillValue`,`lossValue`,`averageFriendCount`,`averageKillValue`,`averageEnemyCount`,`averageLossValue`) VALUES (?,?,0,1,0,0,?,0,0,?,?)
+						$queryUpdateAllianceMetadataVictim = prepareQuery($db,'INSERT INTO `alliance_metadata` (`allianceId`,`allianceName`,`killCount`,`lossCount`,`killValue`,`effectiveKillValue`,`lossValue`,`averageFriendCount`,`averageKillValue`,`averageEnemyCount`,`averageLossValue`) VALUES (?,"",0,1,0,0,?,0,0,?,?)
 															ON DUPLICATE KEY UPDATE `lossCount`=`lossCount`+1, `lossValue`=`lossValue`+VALUES(`lossValue`), `averageEnemyCount`=((`averageEnemyCount`*`lossCount`)+VALUES(`averageEnemyCount`))/(`lossCount`+1), `averageLossValue`=(`lossValue`+VALUES(`averageLossValue`))/(`lossCount`+1);');
 					$queryUpdateAllianceMetadataVictim->bindValue(1,$victimAllianceId,PDO::PARAM_INT);
-					$queryUpdateAllianceMetadataVictim->bindValue(2,$victimAllianceName,PDO::PARAM_STR);
-					$queryUpdateAllianceMetadataVictim->bindValue(3,$valueTotal,PDO::PARAM_STR);
-					$queryUpdateAllianceMetadataVictim->bindValue(4,$numPlayerKillers,PDO::PARAM_INT);
-					$queryUpdateAllianceMetadataVictim->bindValue(5,$valueTotal,PDO::PARAM_STR);
+					$queryUpdateAllianceMetadataVictim->bindValue(2,$valueTotal,PDO::PARAM_STR);
+					$queryUpdateAllianceMetadataVictim->bindValue(3,$numPlayerKillers,PDO::PARAM_INT);
+					$queryUpdateAllianceMetadataVictim->bindValue(4,$valueTotal,PDO::PARAM_STR);
 					$queryUpdateAllianceMetadataVictim->execute();
+          if ($queryUpdateAllianceMetadataVictim->rowCount() == 1)
+          { // new alliance
+              static $queryUpdateAllianceNameVictim = null;
+              if (!$queryUpdateAllianceNameVictim)
+                $queryUpdateAllianceNameVictim = prepareQuery($db,'UPDATE `alliance_metadata` SET `allianceName`=? WHERE `allianceId`=?;');
+              $queryUpdateAllianceNameVictim->bindValue(1,getAllianceName($victimAllianceId),PDO::PARAM_STR);
+              $queryUpdateAllianceNameVictim->bindValue(2,$victimAllianceId,PDO::PARAM_INT);
+              $queryUpdateAllianceNameVictim->execute();
+          }
 				}
 				else
 				{
@@ -780,7 +622,7 @@
 					{
 						$metadataAlliance[$victimAllianceId] = new DBEntityMetadata();
 						$metadataAlliance[$victimAllianceId]->allianceId = $victimAllianceId;
-						$metadataAlliance[$victimAllianceId]->allianceName = $victimAllianceName;
+						$metadataAlliance[$victimAllianceId]->allianceName = getAllianceName($victimAllianceId);
 						$metadataAlliance[$victimAllianceId]->killCount = 0;
 						$metadataAlliance[$victimAllianceId]->killValue = 0;
 						$metadataAlliance[$victimAllianceId]->effectiveKillValue = 0;
@@ -846,23 +688,29 @@
 			foreach ($corporationEffectiveValue as $killerCorporationId => &$effectiveKillValue)
 			{
 				$killerAllianceId = $corporationAllianceCache[$killerCorporationId];
-				$killerCorporationName = $corporationNameCache[$killerCorporationId];
-				
-				
+
 				if (null === $metadataCorporation)
 				{
 					static $queryUpdateCorporationMetadataKiller = null;
 					if (!$queryUpdateCorporationMetadataKiller)
-						$queryUpdateCorporationMetadataKiller = prepareQuery($db,'INSERT INTO `corporation_metadata` (`corporationId`,`corporationName`,`allianceId`,`killCount`,`lossCount`,`killValue`,`effectiveKillValue`,`lossValue`,`averageFriendCount`,`averageKillValue`,`averageEnemyCount`,`averageLossValue`) VALUES (?,?,?,1,0,?,?,0,?,?,0,0)
+						$queryUpdateCorporationMetadataKiller = prepareQuery($db,'INSERT INTO `corporation_metadata` (`corporationId`,`corporationName`,`allianceId`,`killCount`,`lossCount`,`killValue`,`effectiveKillValue`,`lossValue`,`averageFriendCount`,`averageKillValue`,`averageEnemyCount`,`averageLossValue`) VALUES (?,"",?,1,0,?,?,0,?,?,0,0)
 																ON DUPLICATE KEY UPDATE `allianceId`=VALUES(`allianceId`), `killCount`=`killCount`+1, `killValue`=`killValue`+VALUES(`killValue`), `effectiveKillValue`=`effectiveKillValue`+VALUES(`effectiveKillValue`), `averageFriendCount`=((`averageFriendCount`*`killCount`)+VALUES(`averageFriendCount`))/(`killCount`+1), `averageKillValue`=(`killValue`+VALUES(`averageKillValue`))/(`killCount`+1);');
 					$queryUpdateCorporationMetadataKiller->bindValue(1,$killerCorporationId,PDO::PARAM_INT);
-					$queryUpdateCorporationMetadataKiller->bindValue(2,$killerCorporationName,PDO::PARAM_STR);
-					$queryUpdateCorporationMetadataKiller->bindValue(3,$killerAllianceId,PDO::PARAM_INT);
-					$queryUpdateCorporationMetadataKiller->bindValue(4,$valueTotal,PDO::PARAM_STR);
-					$queryUpdateCorporationMetadataKiller->bindValue(5,$effectiveKillValue,PDO::PARAM_STR);
-					$queryUpdateCorporationMetadataKiller->bindValue(6,$numPlayerKillers,PDO::PARAM_INT);
-					$queryUpdateCorporationMetadataKiller->bindValue(7,$valueTotal,PDO::PARAM_STR);
+					$queryUpdateCorporationMetadataKiller->bindValue(2,$killerAllianceId,PDO::PARAM_INT);
+					$queryUpdateCorporationMetadataKiller->bindValue(3,$valueTotal,PDO::PARAM_STR);
+					$queryUpdateCorporationMetadataKiller->bindValue(4,$effectiveKillValue,PDO::PARAM_STR);
+					$queryUpdateCorporationMetadataKiller->bindValue(5,$numPlayerKillers,PDO::PARAM_INT);
+					$queryUpdateCorporationMetadataKiller->bindValue(6,$valueTotal,PDO::PARAM_STR);
 					$queryUpdateCorporationMetadataKiller->execute();
+          if ($queryUpdateCorporationMetadataKiller->rowCount() == 1)
+          { // new corporation
+              static $queryUpdateCorporationNameKiller = null;
+              if (!$queryUpdateCorporationNameKiller)
+                $queryUpdateCorporationNameKiller = prepareQuery($db,'UPDATE `corporation_metadata` SET `corporationName`=? WHERE `corporationId`=?;');
+              $queryUpdateCorporationNameKiller->bindValue(1,getCorporationName($killerCorporationId),PDO::PARAM_STR);
+              $queryUpdateCorporationNameKiller->bindValue(2,$killerCorporationId,PDO::PARAM_INT);
+              $queryUpdateCorporationNameKiller->execute();
+          }
 				}
 				else
 				{
@@ -877,7 +725,7 @@
 					{
 						$metadataCorporation[$killerCorporationId] = new DBEntityMetadata();
 						$metadataCorporation[$killerCorporationId]->corporationId = $killerCorporationId;
-						$metadataCorporation[$killerCorporationId]->corporationName = $killerCorporationName;
+						$metadataCorporation[$killerCorporationId]->corporationName = getCorporationName($killerCorporationId);
 						$metadataCorporation[$killerCorporationId]->allianceId = $killerAllianceId;
 						$metadataCorporation[$killerCorporationId]->killCount = 1;
 						$metadataCorporation[$killerCorporationId]->killValue = $valueTotal;
@@ -900,21 +748,27 @@
 			/* Step 5d: killer statistics (alliance) */
 			foreach ($allianceEffectiveValue as $killerAllianceId => &$effectiveKillValue)
 			{
-				$killerAllianceName = $allianceNameCache[$killerAllianceId];
-				
 				if ($metadataAlliance === null)
 				{
 					static $queryUpdateAllianceMetadataKiller = null;
 					if (!$queryUpdateAllianceMetadataKiller)
-						$queryUpdateAllianceMetadataKiller = prepareQuery($db,'INSERT INTO `alliance_metadata` (`allianceId`,`allianceName`,`killCount`,`lossCount`,`killValue`,`effectiveKillValue`,`lossValue`,`averageFriendCount`,`averageKillValue`,`averageEnemyCount`,`averageLossValue`) VALUES (?,?,1,0,?,?,0,?,?,0,0)
+						$queryUpdateAllianceMetadataKiller = prepareQuery($db,'INSERT INTO `alliance_metadata` (`allianceId`,`allianceName`,`killCount`,`lossCount`,`killValue`,`effectiveKillValue`,`lossValue`,`averageFriendCount`,`averageKillValue`,`averageEnemyCount`,`averageLossValue`) VALUES (?,"",1,0,?,?,0,?,?,0,0)
 																ON DUPLICATE KEY UPDATE `killCount`=`killCount`+1, `killValue`=`killValue`+VALUES(`killValue`), `effectiveKillValue`=`effectiveKillValue`+VALUES(`effectiveKillValue`), `averageFriendCount`=((`averageFriendCount`*`killCount`)+VALUES(`averageFriendCount`))/(`killCount`+1), `averageKillValue`=(`killValue`+VALUES(`averageKillValue`))/(`killCount`+1);');
 					$queryUpdateAllianceMetadataKiller->bindValue(1,$killerAllianceId,PDO::PARAM_INT);
-					$queryUpdateAllianceMetadataKiller->bindValue(2,$killerAllianceName,PDO::PARAM_STR);
-					$queryUpdateAllianceMetadataKiller->bindValue(3,$valueTotal,PDO::PARAM_STR);
-					$queryUpdateAllianceMetadataKiller->bindValue(4,$effectiveKillValue,PDO::PARAM_STR);
-					$queryUpdateAllianceMetadataKiller->bindValue(5,$numPlayerKillers,PDO::PARAM_INT);
-					$queryUpdateAllianceMetadataKiller->bindValue(6,$valueTotal,PDO::PARAM_STR);
+					$queryUpdateAllianceMetadataKiller->bindValue(2,$valueTotal,PDO::PARAM_STR);
+					$queryUpdateAllianceMetadataKiller->bindValue(3,$effectiveKillValue,PDO::PARAM_STR);
+					$queryUpdateAllianceMetadataKiller->bindValue(4,$numPlayerKillers,PDO::PARAM_INT);
+					$queryUpdateAllianceMetadataKiller->bindValue(5,$valueTotal,PDO::PARAM_STR);
 					$queryUpdateAllianceMetadataKiller->execute();
+          if ($queryUpdateAllianceMetadataKiller->rowCount() == 1)
+          { // new alliance
+              static $queryUpdateAllianceNameKiller = null;
+              if (!$queryUpdateAllianceNameKiller)
+                $queryUpdateAllianceNameKiller = prepareQuery($db,'UPDATE `alliance_metadata` SET `allianceName`=? WHERE `allianceId`=?;');
+              $queryUpdateAllianceNameKiller->bindValue(1,getAllianceName($killerAllianceId),PDO::PARAM_STR);
+              $queryUpdateAllianceNameKiller->bindValue(2,$killerAllianceId,PDO::PARAM_INT);
+              $queryUpdateAllianceNameKiller->execute();
+          }
 				}
 				else
 				{
@@ -929,7 +783,7 @@
 					{
 						$metadataAlliance[$killerAllianceId] = new DBEntityMetadata();
 						$metadataAlliance[$killerAllianceId]->allianceId = $killerAllianceId;
-						$metadataAlliance[$killerAllianceId]->allianceName = $killerAllianceName;
+						$metadataAlliance[$killerAllianceId]->allianceName = getAllianceName($killerAllianceId);
 						$metadataAlliance[$killerAllianceId]->killCount = 1;
 						$metadataAlliance[$killerAllianceId]->killValue = $valueTotal;
 						$metadataAlliance[$killerAllianceId]->effectiveKillValue = $effectiveKillValue;

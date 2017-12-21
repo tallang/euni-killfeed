@@ -17,6 +17,7 @@ div#listing-selectors.listing-selected-losses span#listing-selector-losses
 {
   cursor: default;
   font-weight: bold;
+  text-decoration: underline;
 }
 
 div.listing-label

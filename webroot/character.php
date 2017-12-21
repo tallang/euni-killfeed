@@ -156,7 +156,7 @@
 				</div>
 			</div>
 			<div id="block-bottom" class="panel">
-				<div class="listing-label">Recent activity</div>
+				<div class="listing-label noselect">Recent activity</div>
         <div id="listing-selectors" class="listing-selected-all">
           (<span id="listing-selector-all">All</span> | <span id="listing-selector-kills">Kills</span> | <span id="listing-selector-losses">Losses</span>)
         </div>
