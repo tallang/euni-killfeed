@@ -80,7 +80,7 @@
 		echo "We spent ",round($totalAPITime,5)," seconds fetching data from the zKillboard API and ",round($totalMetadataTime,5)," seconds inserting metadata.\n\n";
 		$time3 = PROFILE_time();
 		echo "Now updating statistics...";
-    $querySelectExistingCharacter = prepareQuery($db,'SELECT `killCount`, `lossCount`, `killValue`, `effectiveKillValue`, `lossValue`, `averageFriendCount`, `averageEnemyCount` FROM `character_metadata` WHERE `characterId` = :characterId FOR UPDATE');
+    $querySelectExistingCharacter = prepareQuery($db,'SELECT `characterName`, `killCount`, `lossCount`, `killValue`, `effectiveKillValue`, `lossValue`, `averageFriendCount`, `averageEnemyCount` FROM `character_metadata` WHERE `characterId` = :characterId FOR UPDATE');
 		$queryUpdateExistingCharacter = prepareQuery($db,'UPDATE `character_metadata` SET `corporationId`=:corporationId, `allianceId`=:allianceId, `killCount`=:killCount, `lossCount`=:lossCount, `killValue`=:killValue, `effectiveKillValue`=:effectiveKillValue, `lossValue`=:lossValue, `averageFriendCount`=:averageFriendCount, `averageEnemyCount`=:averageEnemyCount, `averageKillValue`=CASE :killCount WHEN 0 THEN 0 ELSE :killValue/:killCount END, `averageLossValue`=CASE :lossCount WHEN 0 THEN 0 ELSE :lossValue/:lossCount END WHERE `characterId`=:characterId');
 		$queryInsertNewCharacter = prepareQuery($db,'INSERT INTO `character_metadata` (`characterId`,`characterName`,`corporationId`,`allianceId`,`killCount`,`lossCount`,`killValue`,`effectiveKillValue`,`lossValue`,`averageFriendCount`,`averageKillValue`,`averageEnemyCount`,`averageLossValue`) VALUES (:characterId, :characterName, :corporationId, :allianceId, :killCount, :lossCount, :killValue, :effectiveKillValue, :lossValue, :averageFriendCount, CASE :killCount WHEN 0 THEN 0 ELSE :killValue/:killCount END, :averageEnemyCount, CASE :lossCount WHEN 0 THEN 0 ELSE :lossValue/:lossCount END)');
 		foreach ($metadataCharacter as &$characterMeta)
@@ -139,7 +139,7 @@
 			}
 		}
 		
-		$querySelectExistingCorporation = prepareQuery($db,'SELECT `killCount`, `lossCount`, `killValue`, `effectiveKillValue`, `lossValue`, `averageFriendCount`, `averageEnemyCount` FROM `corporation_metadata` WHERE `corporationId` = :corporationId FOR UPDATE');
+		$querySelectExistingCorporation = prepareQuery($db,'SELECT `corporationName`, `killCount`, `lossCount`, `killValue`, `effectiveKillValue`, `lossValue`, `averageFriendCount`, `averageEnemyCount` FROM `corporation_metadata` WHERE `corporationId` = :corporationId FOR UPDATE');
 		$queryUpdateExistingCorporation = prepareQuery($db,'UPDATE `corporation_metadata` SET `killCount`=:killCount, `lossCount`=:lossCount, `killValue`=:killValue, `effectiveKillValue`=:effectiveKillValue, `lossValue`=:lossValue, `averageFriendCount`=:averageFriendCount, `averageEnemyCount`=:averageEnemyCount, `averageKillValue`=CASE :killCount WHEN 0 THEN 0 ELSE :killValue/:killCount END, `averageLossValue`=CASE :lossCount WHEN 0 THEN 0 ELSE :lossValue/:lossCount END WHERE `corporationId`=:corporationId');
 		$queryInsertNewCorporation = prepareQuery($db,'INSERT INTO `corporation_metadata` (`corporationId`,`corporationName`,`allianceId`,`killCount`,`lossCount`,`killValue`,`effectiveKillValue`,`lossValue`,`averageFriendCount`,`averageKillValue`,`averageEnemyCount`,`averageLossValue`) VALUES (:corporationId, :corporationName, :allianceId, :killCount, :lossCount, :killValue, :effectiveKillValue, :lossValue, :averageFriendCount, CASE :killCount WHEN 0 THEN 0 ELSE :killValue/:killCount END, :averageEnemyCount, CASE :lossCount WHEN 0 THEN 0 ELSE :lossValue/:lossCount END)');
 		foreach ($metadataCorporation as &$corporationMeta)
@@ -196,7 +196,7 @@
 			}
 		}
 		
-		$querySelectExistingAlliance = prepareQuery($db,'SELECT `killCount`, `lossCount`, `killValue`, `effectiveKillValue`, `lossValue`, `averageFriendCount`, `averageEnemyCount` FROM `alliance_metadata` WHERE `allianceId` = :allianceId FOR UPDATE');
+		$querySelectExistingAlliance = prepareQuery($db,'SELECT `allianceName`, `killCount`, `lossCount`, `killValue`, `effectiveKillValue`, `lossValue`, `averageFriendCount`, `averageEnemyCount` FROM `alliance_metadata` WHERE `allianceId` = :allianceId FOR UPDATE');
 		$queryUpdateExistingAlliance = prepareQuery($db,'UPDATE `alliance_metadata` SET `killCount`=:killCount, `lossCount`=:lossCount, `killValue`=:killValue, `effectiveKillValue`=:effectiveKillValue, `lossValue`=:lossValue, `averageFriendCount`=:averageFriendCount, `averageEnemyCount`=:averageEnemyCount, `averageKillValue`=CASE :killCount WHEN 0 THEN 0 ELSE :killValue/:killCount END, `averageLossValue`=CASE :lossCount WHEN 0 THEN 0 ELSE :lossValue/:lossCount END WHERE `allianceId`=:allianceId');
 		$queryInsertNewAlliance = prepareQuery($db,'INSERT INTO `alliance_metadata` (`allianceId`,`allianceName`,`killCount`,`lossCount`,`killValue`,`effectiveKillValue`,`lossValue`,`averageFriendCount`,`averageKillValue`,`averageEnemyCount`,`averageLossValue`) VALUES (:allianceId, :allianceName, :killCount, :lossCount, :killValue, :effectiveKillValue, :lossValue, :averageFriendCount, CASE :killCount WHEN 0 THEN 0 ELSE :killValue/:killCount END, :averageEnemyCount, CASE :lossCount WHEN 0 THEN 0 ELSE :lossValue/:lossCount END)');
 		foreach ($metadataAlliance as &$allianceMeta)

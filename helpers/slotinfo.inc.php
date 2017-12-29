@@ -159,6 +159,8 @@
 			case 170:
 			case 171:
 				return SERVICESLOT1+($flag-164);
+      case 172:
+        return FUELHOLD; // this is structure fuel - 133 is ship fuel
       case 177:
         return SUBSYSTEMHOLD;
 			default:
